@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<pages>
+		<uid>1</uid>
+		<pid>0</pid>
+		<doktype>4</doktype>
+		<shortcut_mode>1</shortcut_mode>
+		<title>__ROOT</title>
+	</pages>
+	<pages>
+		<uid>2</uid>
+		<pid>1</pid>
+		<title>Page title 1</title>
+	</pages>
+	<tt_content>
+		<uid>1</uid>
+		<pid>1</pid>
+		<header>Content title 1</header>
+		<bodytext><![CDATA[Sample <link 1>link</link>.]]></bodytext>
+	</tt_content>
+	<tt_content>
+		<uid>2</uid>
+		<pid>2</pid>
+		<header>Content title 2</header>
+		<bodytext><![CDATA[Sample <link 2>link</link>.]]></bodytext>
+	</tt_content>
+	<sys_template>
+		<pid>2</pid>
+		<uid>1</uid>
+		<root>1</root>
+		<clear>2</clear>
+		<static_file_mode>2</static_file_mode>
+		<config><![CDATA[
+			page = PAGE
+			page.10 = TEXT
+			page.10.value = Hello World!
+
+		    config.tx_extbase.persistence.storagePid = 0
+		]]></config>
+	</sys_template>
+</dataset>

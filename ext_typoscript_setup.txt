@@ -1,0 +1,267 @@
+	config.tx_extbase {
+		settings {
+			SugarCRMBackend {
+				url =
+				username =
+				password =
+			}
+		}
+		persistence {
+			classes {
+				EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
+					mapping {
+						columns {
+							id {
+								mapOnProperty = uid
+								config {
+									type = input
+								}
+							}
+							modified_user_id {
+								mapOnProperty = modifiedByUser
+								config {
+									type = select
+									foreign_table = users
+									maxitems = 1
+									multiple = 0
+								}
+							}
+							created_by {
+								mapOnProperty = createdByUser
+								config {
+									type = select
+									foreign_table = users
+									maxitems = 1
+									multiple = 0
+								}
+							}
+							date_entered {
+								config {
+									type = input
+									eval = datetime
+									dbType = datetime
+								}
+							}
+							date_modified {
+								config {
+									type = input
+									eval = datetime
+									dbType = datetime
+								}
+							}
+						}
+					}
+				}
+
+				EssentialDots\EdSugarcrm\Domain\Model\User < .EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity
+				EssentialDots\EdSugarcrm\Domain\Model\User {
+					mapping {
+						tableName = users
+						columns {
+							user_name {
+								config {
+									type = input
+								}
+							}
+							first_name < .user_name
+							last_name < .user_name
+							title < .user_name
+							department < .user_name
+							status < .user_name
+							address_street < .user_name
+							address_city < .user_name
+							address_state < .user_name
+							address_country < .user_name
+							address_postalcode < .user_name
+							employee_status < .user_name
+							messenger_id < .user_name
+							messenger_type < .user_name
+							portal_only < .user_name
+							show_on_employees < .user_name
+							is_group < .user_name
+							reports_to_id {
+								mapOnProperty = reportsTo
+								config {
+									type = select
+									foreign_table = users
+									maxitems = 1
+									multiple = 0
+								}
+							}
+						}
+					}
+				}
+				EssentialDots\EdSugarcrm\Domain\Model\Account < .EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity
+				EssentialDots\EdSugarcrm\Domain\Model\Account {
+					mapping {
+						tableName = accounts
+						columns {
+							name {
+								config {
+									type = input
+								}
+							}
+							emails {
+								config {
+									type = select
+									foreign_table = emails
+									foreign_field = parent_id
+									#	foreign_table_where = parent_type = "Accounts"
+									foreign_match_fields {
+										parent_type = Accounts
+									}
+									#MM =
+									maxitems = 999
+									multiple = 1
+								}
+							}
+							cases {
+								config {
+									type = select
+									foreign_table = cases
+									foreign_field = account_id
+									#MM =
+									maxitems = 999
+									multiple = 1
+								}
+							}
+							assigned_user_id {
+								mapOnProperty = assignedUser
+								config {
+									type = select
+									foreign_table = users
+									maxitems = 1
+									multiple = 0
+								}
+							}
+							description < .name
+							account_type < .name
+							industry < .name
+							annual_revenue < .name
+							phone_fax < .name
+							billing_address_street < .name
+							billing_address_city < .name
+							billing_address_state < .name
+							billing_address_postalcode < .name
+							billing_address_country < .name
+							rating < .name
+							phone_office < .name
+							phone_alternate < .name
+							website < .name
+							ownership < .name
+							employees < .name
+							ticker_symbol < .name
+							shipping_address_street < .name
+							shipping_address_city < .name
+							shipping_address_state < .name
+							shipping_address_postalcode < .name
+							shipping_address_country < .name
+							sic_code < .name
+						}
+					}
+				}
+				EssentialDots\EdSugarcrm\Domain\Model\Email < .EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity
+				EssentialDots\EdSugarcrm\Domain\Model\Email {
+					mapping {
+						tableName = emails
+						columns {
+							name {
+								config {
+									type = input
+								}
+							}
+							assigned_user_id {
+								mapOnProperty = assignedUser
+								config {
+									type = select
+									foreign_table = users
+									maxitems = 1
+									multiple = 0
+								}
+							}
+							date_sent {
+								config {
+									type = input
+									eval = datetime
+									dbType = datetime
+								}
+							}
+							parent_type < .name
+							parent_id < .name
+							message_id < .name
+							type < .name
+							status < .name
+							intent < .name
+							flagged < .name
+							reply_to_status < .name
+							description < .name
+							description_html < .name
+							raw_source < .name
+							from_addr_name < .name
+							from_addr_name.mapOnProperty = fromAddr
+							reply_to_addr < .name
+							to_addrs_names < .name
+							to_addrs_names.mapOnProperty = toAddrs
+							cc_addrs_names < .name
+							cc_addrs_names.mapOnProperty = ccAddrs
+							bcc_addrs_names < .name
+							bcc_addrs_names.mapOnProperty = bccAddrs
+
+						}
+					}
+				}
+				EssentialDots\EdSugarcrm\Domain\Model\SupportCase < .EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity
+				EssentialDots\EdSugarcrm\Domain\Model\SupportCase {
+					mapping {
+						tableName = cases
+						columns {
+							name {
+								config {
+									type = input
+								}
+							}
+							status < .name
+							description < .name
+							type < .name
+							priority < .name
+							resolution < .name
+							work_log < .name
+							case_number < .name
+							emails {
+								config {
+									type = select
+									foreign_table = emails
+									foreign_field = parent_id
+									# foreign_table_where = parent_type = "Cases"
+									foreign_match_fields {
+										parent_type = Cases
+									}
+									#MM =
+									maxitems = 999
+									multiple = 1
+								}
+							}
+							assigned_user_id {
+								mapOnProperty = assignedUser
+								config {
+									type = select
+									foreign_table = users
+									maxitems = 1
+									multiple = 0
+								}
+							}
+							account_id {
+								mapOnProperty = account
+								config {
+									type = select
+									foreign_table = accounts
+									maxitems = 1
+									multiple = 0
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}

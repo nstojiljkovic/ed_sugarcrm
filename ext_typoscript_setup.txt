@@ -160,6 +160,23 @@
 						}
 					}
 				}
+				EssentialDots\EdSugarcrm\Domain\Model\EmailAddress < .EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity
+				EssentialDots\EdSugarcrm\Domain\Model\EmailAddress {
+					mapping {
+						tableName = email_addresses
+						columns {
+							email_address {
+								config {
+									type = input
+								}
+							}
+							email_address_caps < .email_address
+							invalid_email < .email_address
+							opt_out < .email_address
+
+						}
+					}
+				}
 				EssentialDots\EdSugarcrm\Domain\Model\Email < .EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity
 				EssentialDots\EdSugarcrm\Domain\Model\Email {
 					mapping {

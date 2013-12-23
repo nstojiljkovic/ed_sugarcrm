@@ -239,15 +239,10 @@ class SugarCRMRESTHandle implements \TYPO3\CMS\Core\SingletonInterface {
 			$sortedParameters[$parameterKey] = $apiParameters[$parameterKey];
 		}
 
-		// @todo: cleanup
-//		print_r("\n$method:\n" . print_r($sortedParameters, 1) . "\n");
-
 		$result = $this->rest_request(
 			$method,
 			$sortedParameters
 		);
-
-//		print_r("\n" . print_r($result, 1) . "\n");
 
 		return $result;
 	}

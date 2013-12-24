@@ -124,6 +124,7 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 		$extbaseObjectContainer->registerImplementation('TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface', 'TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager');
 		$extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Storage\\BackendInterface', 'TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Storage\\Typo3DbBackend');
 		$extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\QuerySettingsInterface', 'TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $extbaseObjectContainer->registerImplementation('EssentialDots\\EdSugarcrm\\Persistence\\Generic\\Storage\\SugarCRMRESTHandle', 'EssentialDots\\EdSugarcrm\\Tests\\Mock\\Persistance\\Generic\\Storage\\SugarCRMRESTHandleMock');
 		//Tx_Extbase_Persistence_Storage_Typo3DbBackend::OPERATOR_EQUAL_TO_NULL
 		unset($extbaseObjectContainer);
 	}

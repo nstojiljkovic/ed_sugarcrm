@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="flexform.general_settings">General settings</label>
+			<label index="flexform.general_settings.template">Template:</label>
+			<label index="flexform.template.login.default">Default</label>
+
+			<label index="flexform.sDef.switchableControllerAction">Default view:</label>
+			<label index="flexform.sDef.switchableControllerAction.user">User panel</label>
+
+			<label index="fe_users.tabs.sugarcrm">SugarCRM</label>
+			<label index="fe_users.fields.tx_edsugarcrm_crmaccount">SugarCRM account id:</label>
+		</languageKey>
+	</data>
+</T3locallang>

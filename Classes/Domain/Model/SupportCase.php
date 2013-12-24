@@ -87,6 +87,11 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
 	protected $account;
 
 	/**
+	 * @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+	 */
+	protected $_emailsQueryResult;
+
+	/**
 	 * __construct
 	 *
 	 * @param $decoratedObject
@@ -166,6 +171,29 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
 	 */
 	public function getEmails() {
 		return $this->emails;
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+	 */
+	public function getEmailsQueryResult() {
+		if (!$this->_emailsQueryResult) {
+			$emailRepository = $this->getObjectManager()->get('EssentialDots\\EdSugarcrm\\Domain\\Repository\\EmailRepository'); /* @var $emailRepository \EssentialDots\EdSugarcrm\Domain\Repository\EmailRepository */
+			$query = $emailRepository->createQuery();
+			$query->getQuerySettings()->setRespectStoragePage(FALSE);
+			$query->getQuerySettings()->setRespectSysLanguage(FALSE);
+			$query->setOrderings(array(
+				'date_entered' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
+			));
+			$this->_emailsQueryResult = $query->matching(
+				$query->logicalAnd(
+						$query->equals('parent_id', $this->getUid()),
+						$query->equals('parent_type', 'Cases')
+				)
+			)->execute();
+
+		}
+		return $this->_emailsQueryResult;
 	}
 
 	/**
@@ -287,5 +315,15 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
 	 */
 	public function getWorkLog() {
 		return $this->workLog;
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Extbase\Object\ObjectManager
+	 */
+	protected function getObjectManager() {
+		if ($this->_objectManager === NULL) {
+			$this->_objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		}
+		return $this->_objectManager;
 	}
 }

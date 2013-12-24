@@ -8,6 +8,20 @@
 		}
 		persistence {
 			classes {
+				EssentialDots\ExtbaseDomainDecorator\Domain\Model\AbstractFrontendUser {
+					mapping {
+						columns {
+							tx_edsugarcrm_crmaccount.mapOnProperty = crmAccount
+						}
+					}
+				}
+				EssentialDots\ExtbaseDomainDecorator\Domain\Model\FrontendUser {
+					mapping {
+						columns {
+							tx_edsugarcrm_crmaccount.mapOnProperty = crmAccount
+						}
+					}
+				}
 				EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 					mapping {
 						columns {
@@ -113,7 +127,7 @@
 									#MM =
 									maxitems = 999
 									multiple = 1
-									foreign_sortby = created_by desc
+									foreign_sortby = date_entered desc
 								}
 							}
 							cases {
@@ -281,6 +295,7 @@
 									#MM =
 									maxitems = 999
 									multiple = 1
+									foreign_sortby = date_entered desc
 								}
 							}
 							assigned_user_id {

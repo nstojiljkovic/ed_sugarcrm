@@ -1,0 +1,37 @@
+{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+
+<f:if condition="{configuration.insertAbove}">
+    <f:render section="paginator" arguments="{pagination: pagination, variables: variables, additionalClass: 'top'}"/>
+</f:if>
+
+<f:renderChildren arguments="{contentArguments}"/>
+
+<f:if condition="{configuration.insertBelow}">
+    <f:render section="paginator" arguments="{pagination: pagination, variables: variables, additionalClass: 'bottom'}"/>
+</f:if>
+
+<f:section name="paginator">
+    <f:if condition="{pagination.numberOfPages} > 1">
+        <nav class="pagination {additionalClass}">
+            <ul>
+                <f:if condition="{pagination.current} > 1">
+                    <f:then>
+                        <li class="prev"><h:widget.link arguments="{currentPage: pagination.previousPage}">Prev</h:widget.link></li>
+                    </f:then>
+                    <f:else>
+                        <li class="prev disabled"><a onclick="return false;" href="#">Prev</a></li>
+                    </f:else>
+                </f:if>
+                <li class="center"><f:translate key="LLL:EXT:kestenholz_base/language/fe/locallang.news.xml:news.search.pagination.page"/> {pagination.current} of {pagination.numberOfPages}</li>
+                <f:if condition="{pagination.current} == {pagination.numberOfPages}">
+                    <f:then>
+                        <li class="next disabled"><a onclick="return false;" href="#">Next</a></li>
+                    </f:then>
+                    <f:else>
+                        <li class="next"><h:widget.link arguments="{currentPage: pagination.nextPage}" class="left">Next</h:widget.link></li>
+                    </f:else>
+                </f:if>
+            </ul>
+        </nav>
+    </f:if>
+</f:section>

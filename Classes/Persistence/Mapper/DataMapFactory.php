@@ -25,7 +25,7 @@ namespace EssentialDots\EdSugarcrm\Persistence\Mapper;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class DataMapFactory extends \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory implements \Tx_ExtbaseDomainDecorator_Persistence_Mapper_DataMapFactoryInterface {
+class DataMapFactory extends \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory implements \EssentialDots\ExtbaseDomainDecorator\Persistence\Mapper\DataMapFactoryInterface {
 
 	/**
 	 * @var array<\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMap>

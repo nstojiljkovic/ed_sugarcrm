@@ -25,7 +25,7 @@ namespace EssentialDots\EdSugarcrm\Domain\Model;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class AbstractEntity extends \Tx_ExtbaseDomainDecorator_DomainObject_AbstractEntity {
+class AbstractEntity extends \EssentialDots\ExtbaseDomainDecorator\DomainObject\AbstractEntity {
 
 	/**
 	 * @var string The uid of the record. The uid is only unique in the context of the database table.

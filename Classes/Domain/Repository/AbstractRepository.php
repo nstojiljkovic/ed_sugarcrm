@@ -25,6 +25,6 @@ namespace EssentialDots\EdSugarcrm\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class AbstractRepository extends \Tx_ExtbaseDomainDecorator_Persistence_AbstractRepository {
+class AbstractRepository extends \EssentialDots\ExtbaseDomainDecorator\Persistence\AbstractRepository {
 
 }

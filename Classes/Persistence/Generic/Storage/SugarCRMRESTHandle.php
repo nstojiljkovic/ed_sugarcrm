@@ -62,6 +62,8 @@ class SugarCRMRESTHandle implements \TYPO3\CMS\Core\SingletonInterface {
 		'get_entry_list' => array('session', 'module_name', 'query', 'order_by', 'offset', 'select_fields', 'link_name_to_fields_array', 'max_results', 'deleted', 'favorites'),
 		'get_entries_count' => array('session', 'module_name', 'query', 'deleted'),
 		'get_available_modules' => array('session', 'filter'),
+		'get_relationships' => array('session', 'module_name', 'module_id', 'link_field_name', 'related_module_query', 'related_fields', 'related_module_link_name_to_fields_array', 'deleted', 'order_by'),
+		'set_relationship' => array('session', 'module_name', 'module_id', 'link_field_name', 'related_ids', 'name_value_list', 'delete'),
 		'get_module_fields' => array('session', 'module_name', 'fields')
 	);
 

@@ -80,4 +80,129 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 		$this->session->registerObject($object, $uid);
 	}
 
+	/**
+	 * Inserts mm-relation into a relation table
+	 *
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object The related object
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject The parent object
+	 * @param string $propertyName The name of the parent object's property where the related objects are stored in
+	 * @param integer $sortingPosition Defaults to NULL
+	 * @return integer The uid of the inserted row
+	 */
+	protected function insertRelationInRelationtable(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject, $propertyName, $sortingPosition = NULL) {
+		$dataMap = $this->dataMapper->getDataMap(get_class($parentObject));
+		$columnMap = $dataMap->getColumnMap($propertyName);
+		$row = array(
+			// old: $columnMap->getParentKeyFieldName() => (integer) $parentObject->getUid(),
+			// old: $columnMap->getChildKeyFieldName() => (integer) $object->getUid(),
+			// old: $columnMap->getChildSortByFieldName() => !is_null($sortingPosition) ? (integer) $sortingPosition : 0
+			$columnMap->getParentKeyFieldName() => $parentObject->getUid(),
+			$columnMap->getChildKeyFieldName() => $object->getUid(),
+			$columnMap->getChildSortByFieldName() => !is_null($sortingPosition) ? $sortingPosition : 0
+		);
+		$relationTableName = $columnMap->getRelationTableName();
+		// FIXME Reenable support for tablenames
+		// $childTableName = $columnMap->getChildTableName();
+		// if (isset($childTableName)) {
+		// 	$row['tablenames'] = $childTableName;
+		// }
+		if ($columnMap->getRelationTablePageIdColumnName() !== NULL) {
+			$row[$columnMap->getRelationTablePageIdColumnName()] = $this->determineStoragePageIdForNewRecord();
+		}
+		$relationTableMatchFields = $columnMap->getRelationTableMatchFields();
+		if (count($relationTableMatchFields)) {
+			foreach ($relationTableMatchFields as $matchField => $matchValue) {
+				$row[$matchField] = $matchValue;
+			}
+		}
+		$relationTableInsertFields = $columnMap->getRelationTableInsertFields();
+		if (count($relationTableInsertFields)) {
+			foreach ($relationTableInsertFields as $insertField => $insertValue) {
+				$row[$insertField] = $insertValue;
+			}
+		}
+		$res = $this->storageBackend->addRow($relationTableName, $row, TRUE);
+		return $res;
+	}
+
+	/**
+	 * Inserts mm-relation into a relation table
+	 *
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object The related object
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject The parent object
+	 * @param string $propertyName The name of the parent object's property where the related objects are stored in
+	 * @param integer $sortingPosition Defaults to NULL
+	 * @return integer The uid of the inserted row
+	 */
+	protected function updateRelationInRelationTable(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject, $propertyName, $sortingPosition = 0) {
+		$dataMap = $this->dataMapper->getDataMap(get_class($parentObject));
+		$columnMap = $dataMap->getColumnMap($propertyName);
+		$row = array(
+			// old: $columnMap->getParentKeyFieldName() => (int)$parentObject->getUid(),
+			// old: $columnMap->getChildKeyFieldName() => (int)$object->getUid(),
+			// old: $columnMap->getChildSortByFieldName() => (int)$sortingPosition
+			$columnMap->getParentKeyFieldName() => $parentObject->getUid(),
+			$columnMap->getChildKeyFieldName() => $object->getUid(),
+			$columnMap->getChildSortByFieldName() => $sortingPosition
+		);
+		$relationTableName = $columnMap->getRelationTableName();
+		// FIXME Reenable support for tablenames
+		// $childTableName = $columnMap->getChildTableName();
+		// if (isset($childTableName)) {
+		// 	$row['tablenames'] = $childTableName;
+		// }
+
+		$relationTableMatchFields = $columnMap->getRelationTableMatchFields();
+		if (is_array($relationTableMatchFields) && count($relationTableMatchFields) > 0) {
+			$row = array_merge($relationTableMatchFields, $row);
+		}
+		$res = $this->storageBackend->updateRelationTableRow(
+			$relationTableName,
+			$row);
+		return $res;
+	}
+
+	/**
+	 * Delete all mm-relations of a parent from a relation table
+	 *
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject The parent object
+	 * @param string $parentPropertyName The name of the parent object's property where the related objects are stored in
+	 * @return boolean
+	 */
+	protected function deleteAllRelationsFromRelationtable(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject, $parentPropertyName) {
+		$dataMap = $this->dataMapper->getDataMap(get_class($parentObject));
+		$columnMap = $dataMap->getColumnMap($parentPropertyName);
+		$relationTableName = $columnMap->getRelationTableName();
+		$relationMatchFields = array(
+			// old: $columnMap->getParentKeyFieldName() => (integer) $parentObject->getUid()
+			$columnMap->getParentKeyFieldName() => $parentObject->getUid()
+		);
+		$relationTableMatchFields = $columnMap->getRelationTableMatchFields();
+		if (is_array($relationTableMatchFields) && count($relationTableMatchFields) > 0) {
+			$relationMatchFields = array_merge($relationTableMatchFields, $relationMatchFields);
+		}
+		$res = $this->storageBackend->removeRow($relationTableName, $relationMatchFields, FALSE);
+		return $res;
+	}
+
+	/**
+	 * Delete an mm-relation from a relation table
+	 *
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $relatedObject The related object
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject The parent object
+	 * @param string $parentPropertyName The name of the parent object's property where the related objects are stored in
+	 * @return boolean
+	 */
+	protected function deleteRelationFromRelationtable(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $relatedObject, \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject, $parentPropertyName) {
+		$dataMap = $this->dataMapper->getDataMap(get_class($parentObject));
+		$columnMap = $dataMap->getColumnMap($parentPropertyName);
+		$relationTableName = $columnMap->getRelationTableName();
+		$res = $this->storageBackend->removeRow($relationTableName, array(
+			// old: $columnMap->getParentKeyFieldName() => (integer) $parentObject->getUid(),
+			// old: $columnMap->getChildKeyFieldName() => (integer) $relatedObject->getUid()
+			$columnMap->getParentKeyFieldName() => $parentObject->getUid(),
+			$columnMap->getChildKeyFieldName() => $relatedObject->getUid()
+		), FALSE);
+		return $res;
+	}
 }

@@ -106,13 +106,14 @@
 									type = select
 									foreign_table = emails
 									foreign_field = parent_id
-									#	foreign_table_where = parent_type = "Accounts"
+									# foreign_table_where = parent_type = "Accounts"
 									foreign_match_fields {
 										parent_type = Accounts
 									}
 									#MM =
 									maxitems = 999
 									multiple = 1
+									foreign_sortby = created_by desc
 								}
 							}
 							cases {
@@ -123,6 +124,7 @@
 									#MM =
 									maxitems = 999
 									multiple = 1
+									foreign_sortby = case_number desc
 								}
 							}
 							assigned_user_id {
@@ -157,6 +159,29 @@
 							shipping_address_postalcode < .name
 							shipping_address_country < .name
 							sic_code < .name
+							email_addresses {
+								config {
+									type = select
+									foreign_table = email_addresses
+									# foreign_field = parent_id
+									# foreign_table_where = parent_type = "Accounts"
+									# foreign_match_fields {
+									# 	parent_type = Accounts
+									# }
+									MM = sugarcrm:accounts->email_addresses
+									maxitems = 999
+									multiple = 1
+								}
+							}
+							email_addresses_primary {
+								config {
+									type = select
+									foreign_table = email_addresses
+									MM = sugarcrm:accounts->email_addresses_primary
+									maxitems = 1
+									multiple = 0
+								}
+							}
 						}
 					}
 				}

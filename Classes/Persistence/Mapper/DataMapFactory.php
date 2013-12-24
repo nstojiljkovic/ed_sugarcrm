@@ -28,12 +28,25 @@ namespace EssentialDots\EdSugarcrm\Persistence\Mapper;
 class DataMapFactory extends \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory implements \Tx_ExtbaseDomainDecorator_Persistence_Mapper_DataMapFactoryInterface {
 
 	/**
+	 * @var array<\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMap>
+	 */
+	protected $_dataMapsPerTable = array();
+
+	/**
+	 * @param $tableName
+	 * @return \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMap
+	 */
+	public function getDataMapForTable($tableName) {
+		return $this->_dataMapsPerTable[$tableName];
+	}
+
+	/**
 	 * Builds a data map by adding column maps for all the configured columns in the $TCA.
 	 * It also resolves the type of values the column is holding and the typo of relation the column
 	 * represents.
 	 *
 	 * @param string $className The class name you want to fetch the Data Map for
-	 * @return \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMap|\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper
+	 * @return \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMap
 	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\InvalidClassException
 	 */
 	public function buildDataMap($className) {
@@ -88,6 +101,9 @@ class DataMapFactory extends \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataM
 			$columnMap = $this->setFieldEvaluations($columnMap, $columnDefinition['config']);
 			$dataMap->addColumnMap($columnMap);
 		}
+
+		$this->_dataMapsPerTable[$tableName] = $dataMap;
+
 		return $dataMap;
 	}
 }

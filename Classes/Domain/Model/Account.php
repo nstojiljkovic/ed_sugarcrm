@@ -169,6 +169,18 @@ class Account extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 	protected $assignedUser;
 
 	/**
+	 * @lazy
+	 * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress>
+	 */
+	protected $emailAddresses;
+
+	/**
+	 * @lazy
+	 * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress>
+	 */
+	protected $emailAddressesPrimary;
+
+	/**
 	 * __construct
 	 *
 	 * @param $decoratedObject
@@ -192,6 +204,8 @@ class Account extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 		 */
 		$this->emails = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
 		$this->cases = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+		$this->emailAddresses = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+		$this->emailAddressesPrimary = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
 	}
 
 	/**
@@ -566,6 +580,73 @@ class Account extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 	 */
 	public function setEmails(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $emails) {
 		$this->emails = $emails;
+	}
+
+	/**
+	 * Adds an email address
+	 *
+	 * @param \EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress
+	 * @return void
+	 */
+	public function addEmailAddress(\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress) {
+		$this->emailAddresses->attach($emailAddress);
+	}
+
+	/**
+	 * Removes an email address
+	 *
+	 * @param \EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddressToRemove The email to be removed
+	 * @return void
+	 */
+	public function removeEmailAddress(\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddressToRemove) {
+		$this->emailAddresses->detach($emailAddressToRemove);
+	}
+
+	/**
+	 * Returns the email addresses
+	 *
+	 * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress> $emailAddresses
+	 */
+	public function getEmailsAddresses() {
+		return $this->emailAddresses;
+	}
+
+	/**
+	 * Sets the email addresses
+	 *
+	 * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress> $emailAddresses
+	 */
+	public function setEmailAddresses(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $emailAddresses) {
+		$this->emailAddresses = $emailAddresses;
+	}
+
+	/**
+	 * Returns the primary email address
+	 *
+	 * @return \EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress
+	 */
+	public function getPrimaryEmailAddress() {
+		$tArr = $this->emailAddressesPrimary->toArray();
+		return count($tArr) ? $tArr[0] : NULL;
+	}
+
+	/**
+	 * Sets the email addresses
+	 *
+	 * @param \EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress
+	 */
+	public function setPrimaryEmailAddress(\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress) {
+		foreach ($this->emailAddressesPrimary as $oldPrimaryEmailAddress) {
+			if ($emailAddress->getUid() != $oldPrimaryEmailAddress->getUid()) {
+				$this->emailAddressesPrimary->detach($oldPrimaryEmailAddress);
+			}
+		}
+		if (!$this->emailAddresses->contains($emailAddress)) {
+			$this->emailAddresses->attach($emailAddress);
+		}
+		if (!$this->emailAddressesPrimary->contains($emailAddress)) {
+			$this->emailAddressesPrimary->attach($emailAddress);
+		}
 	}
 
 	/**

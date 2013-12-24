@@ -63,6 +63,16 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	protected $configurationManager;
 
 	/**
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+	 */
+	protected $objectManager = NULL;
+
+	/**
+	 * @var \EssentialDots\EdSugarcrm\Persistence\Mapper\DataMapFactory
+	 */
+	protected $dataMapFactory;
+
+	/**
 	 * Constructor. takes the database handle from $GLOBALS['TYPO3_DB']
 	 *
 	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
@@ -70,6 +80,8 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	public function __construct(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 		$this->databaseHandle = $GLOBALS['TYPO3_DB'];
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$this->dataMapFactory = $this->objectManager->get('EssentialDots\\EdSugarcrm\\Persistence\\Mapper\\DataMapFactory');
 	}
 
 	/**
@@ -77,7 +89,7 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 */
 	protected function getRestAPIHandle() {
 		if (!$this->restAPIHandle) {
-			$this->restAPIHandle = GeneralUtility::makeInstance('EssentialDots\\EdSugarcrm\\Persistence\\Generic\\Storage\\SugarCRMRESTHandle');
+			$this->restAPIHandle = $this->objectManager->get('EssentialDots\\EdSugarcrm\\Persistence\\Generic\\Storage\\SugarCRMRESTHandle');
 			$frameworkSettings = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 			$this->restAPIHandle->setRESTUrl($frameworkSettings['SugarCRMBackend']['url']);
 			$this->restAPIHandle->setUsername($frameworkSettings['SugarCRMBackend']['username']);
@@ -99,7 +111,26 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 */
 	public function addRow($tableName, array $row, $isRelation = FALSE) {
 		if ($isRelation) {
-			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently does not support relation rows.', 1242814327);
+			$matches = array();
+			if (preg_match("/^sugarcrm:(.*)->(.*)$/U", $tableName, $matches)==1) {
+				// SugarCRM support relationship
+				// MM = sugarcrm:accounts->email_addresses
+				$set_relationship_parameters = array(
+					'module_name' => GeneralUtility::underscoredToUpperCamelCase($matches[1]),
+					'module_id' => $row['uid_local'],
+					'link_field_name' => $matches[2],
+					'related_ids' => array(
+						$row['uid_foreign'],
+					),
+					'name_value_list' => array(
+					),
+					'delete'=> 0,
+				);
+				$result = $this->getRestAPIHandle()->execQuery($set_relationship_parameters, 'set_relationship');
+				return $result['created'];
+			} else {
+				throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently supports relation rows with sugarcrm:table->relation_field syntax only.', 1242814327);
+			}
 		} else {
 			$result = $this->getRestAPIHandle()->execQuery($this->buildSetEntryParameters($tableName, $row), 'set_entry');
 			return $result['id'];
@@ -117,9 +148,12 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 */
 	public function updateRow($tableName, array $row, $isRelation = FALSE) {
 		if ($isRelation) {
-			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently does not support relation rows.', 1242814327);
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently supports relation rows with sugarcrm:table->relation_field syntax only.', 1242814327);
 		} else {
-			$this->getRestAPIHandle()->execQuery($this->buildSetEntryParameters($tableName, $row), 'set_entry');
+			$apiParameters = $this->buildSetEntryParameters($tableName, $row);
+			if (count($apiParameters['name_value_list'])>1) { // test if there's anything else besides id field
+				$this->getRestAPIHandle()->execQuery($apiParameters, 'set_entry');
+			}
 		}
 	}
 
@@ -132,7 +166,12 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 * @throws Exception\UnsupportedQueryException
 	 */
 	public function updateRelationTableRow($tableName, array $row) {
-		throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently does not support relation rows.', 1242814327);
+		$matches = array();
+		if (preg_match("/^sugarcrm:(.*)->(.*)$/U", $tableName, $matches)==1) {
+			// ignore, we don't care about sorting...
+		} else {
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently supports relation rows with sugarcrm:table->relation_field syntax only.', 1242814327);
+		}
 	}
 
 	/**
@@ -145,15 +184,33 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 * @throws Exception\UnsupportedQueryException
 	 */
 	public function removeRow($tableName, array $identifier, $isRelation = FALSE) {
-		if ($isRelation) {
-			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently does not support relation rows.', 1242814327);
+		$matches = array();
+		if (preg_match("/^sugarcrm:(.*)->(.*)$/U", $tableName, $matches)==1) {
+			// SugarCRM support relationship
+			// MM = sugarcrm:accounts->email_addresses
+			$set_relationship_parameters = array(
+				'module_name' => GeneralUtility::underscoredToUpperCamelCase($matches[1]),
+				'module_id' => $identifier['uid_local'],
+				'link_field_name' => $matches[2],
+				'related_ids' => array(
+					$identifier['uid_foreign'],
+				),
+				'name_value_list' => array(
+				),
+				'delete'=> 1,
+			);
+			$result = $this->getRestAPIHandle()->execQuery($set_relationship_parameters, 'set_relationship');
 		} else {
-			if (count($identifier) != 1 || !$identifier['uid']) {
-				throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRM API supports deleting rows by identifiers only. Complex queries are not supported.', 1242814332);
+			if ($isRelation) {
+				throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend currently supports relation rows with sugarcrm:table->relation_field syntax only.', 1242814327);
+			} else {
+				if (count($identifier) != 1 || !$identifier['uid']) {
+					throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRM API supports deleting rows by identifiers only. Complex queries are not supported.', 1242814332);
+				}
+				$row = $identifier;
+				$row['deleted'] = 1;
+				$result = $this->getRestAPIHandle()->execQuery($this->buildSetEntryParameters($tableName, $row), 'set_entry');
 			}
-			$row = $identifier;
-			$row['deleted'] = 1;
-			$this->getRestAPIHandle()->execQuery($this->buildSetEntryParameters($tableName, $row), 'set_entry');
 		}
 	}
 
@@ -179,8 +236,23 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 */
 	public function getObjectCountByQuery(\TYPO3\CMS\Extbase\Persistence\QueryInterface $query) {
 		$apiParameters = $this->getAPIParametersForQuery($query);
-		$result = $this->getRestAPIHandle()->execQuery($apiParameters, 'get_entries_count');
-		return intval($result['result_count']);
+		$method = $apiParameters['method'];
+		unset($apiParameters['method']);
+		$result = 0;
+		switch ($method) {
+			case 'get_entry_list':
+				$result = $this->getRestAPIHandle()->execQuery($apiParameters, 'get_entries_count');
+				$result = intval($result['result_count']);
+				break;
+			case 'get_relationships':
+				// @todo: optimize this, it's very slow
+				$result = $this->getRestAPIHandle()->execQuery($apiParameters, 'get_relationships');
+				$rows = $this->getRowsFromResult($result, $query);
+				$result = count($rows);
+				break;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -192,24 +264,42 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 */
 	public function getObjectDataByQuery(\TYPO3\CMS\Extbase\Persistence\QueryInterface $query) {
 		$apiParameters = $this->getAPIParametersForQuery($query);
+		$method = $apiParameters['method'];
+		unset($apiParameters['method']);
 
 		if ($apiParameters['module_name'] === 'Emails') {
 			// fix for the SugarCRM API bug:
 			// EmailText module is available only through get_entries and get_entry methods
-			$selectFieldsOriginal = $apiParameters['select_fields'];
-			$apiParameters['select_fields'] = array('id');
-			$result = $this->getRestAPIHandle()->execQuery($apiParameters, 'get_entry_list');
-			$rows = $this->getRowsFromResult($result, $query);
+			if ($method=='get_entry_list') {
+				$selectFieldsOriginal = $apiParameters['select_fields'];
+				$apiParameters['select_fields'] = array('id');
+				$result = $this->getRestAPIHandle()->execQuery($apiParameters, $method);
+				$rows = $this->getRowsFromResult($result, $query);
 
-			$apiParameters['ids'] = array();
-			foreach ($rows as $row) {
-				$apiParameters['ids'][] = $row['uid'];
+				$apiParameters['ids'] = array();
+				foreach ($rows as $row) {
+					$apiParameters['ids'][] = $row['uid'];
+				}
+				$apiParameters['select_fields'] = $selectFieldsOriginal;
+			} else {
+				// get_relationships method
+				$relatedFieldsOriginal = $apiParameters['related_fields'];
+				$apiParameters['related_fields'] = array('id');
+				$result = $this->getRestAPIHandle()->execQuery($apiParameters, $method);
+				$rows = $this->getRowsFromResult($result, $query);
+
+				$apiParameters['ids'] = array();
+				foreach ($rows as $row) {
+					$apiParameters['ids'][] = $row['uid'];
+				}
+				$apiParameters['select_fields'] = $relatedFieldsOriginal;
+				$apiParameters['link_name_to_fields_array'] = array();
 			}
+
 			$apiParameters['track_view'] = true;
-			$apiParameters['select_fields'] = $selectFieldsOriginal;
 			$result = $this->getRestAPIHandle()->execQuery($apiParameters, 'get_entries');
 		} else {
-			$result = $this->getRestAPIHandle()->execQuery($apiParameters, 'get_entry_list');
+			$result = $this->getRestAPIHandle()->execQuery($apiParameters, $method);
 		}
 
 		$rows = $this->getRowsFromResult($result, $query);
@@ -222,6 +312,17 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 * @return array
 	 */
 	protected function buildSetEntryParameters($tableName, $row) {
+		$dataMap = $this->dataMapFactory->getDataMapForTable($tableName);
+		if ($dataMap) {
+			// filter out properties which are in fact MM relations
+			foreach ($dataMap->getPropertyNames() as $propertyName) {
+				$columnMap = $dataMap->getColumnMap($propertyName);
+				if ($columnMap->getTypeOfRelation() != \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\ColumnMap::RELATION_NONE && $columnMap->getTypeOfRelation() != \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\ColumnMap::RELATION_HAS_ONE) {
+					unset($row[$columnMap->getColumnName()]);
+				}
+			}
+		}
+
 		$nameValueList = array();
 		unset($row['pid']);
 		if ($row['uid']) {
@@ -257,13 +358,24 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 		} else {
 			$parameters = array();
 			$statementParts = $this->parseQuery($query, $parameters);
-			$apiParameters = $this->buildEntryListParameters($statementParts, $parameters);
+			$tableName = 'foo';
+			switch ($statementParts['method']) {
+				case 'get_relationships':
+					$apiParameters = $this->buildGetRelationshipsParameters($statementParts, $parameters);
+					$apiParameters['method'] = 'get_relationships';
+					$apiParameters['module_id'] = $parameters[0];
+					//$this->replacePlaceholders($apiParameters['module_id'], $parameters, $tableName);
+					break;
+				default:
+					$apiParameters = $this->buildEntryListParameters($statementParts, $parameters);
+					if (is_array($statementParts) && !empty($statementParts['tables'])) {
+						$tableName = implode('', $statementParts['tables']);
+					}
+					$apiParameters['method'] = 'get_entry_list';
+					$this->replacePlaceholders($apiParameters['query'], $parameters, $tableName);
+					break;
+			}
 		}
-		$tableName = 'foo';
-		if (is_array($statementParts) && !empty($statementParts['tables'])) {
-			$tableName = implode('', $statementParts['tables']);
-		}
-		$this->replacePlaceholders($apiParameters['query'], $parameters, $tableName);
 
 		return $apiParameters;
 	}
@@ -291,13 +403,61 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 		$this->parseConstraint($query->getConstraint(), $source, $sql, $parameters);
 		$this->parseOrderings($query->getOrderings(), $source, $sql);
 		$this->parseLimitAndOffset($query->getLimit(), $query->getOffset(), $sql);
-		$tableNames = array_unique(array_keys($sql['tables'] + $sql['unions']));
-		foreach ($tableNames as $tableName) {
-			if (is_string($tableName) && strlen($tableName) > 0) {
-				$this->addAdditionalWhereClause($query->getQuerySettings(), $tableName, $sql);
-			}
-		}
 		return $sql;
+	}
+
+	/**
+	 * Returns the statement, ready to be executed.
+	 *
+	 * @param array $sqlStatementParts The SQL statement parts
+	 * @return string The SQL statement
+	 * @throws Exception\UnsupportedQueryException
+	 */
+	protected function buildGetRelationshipsParameters(array $sqlStatementParts) {
+		$get_relationships_params = array(
+			'module_name' => '',
+			'module_id' => '?',
+			'link_field_name' => $sqlStatementParts['link_field_name'],
+			'related_module_query' => '',
+			'related_fields' => null,
+			'related_module_link_name_to_fields_array' => array(),
+			'deleted' => 0,
+			'order_by' => '',
+			// 'offset' => 0,
+			// 'limit' => 0,
+		);
+
+		if (count($sqlStatementParts['tables'])!=1) {
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend does not support joins.', 1242814326);
+		}
+
+		if (count($sqlStatementParts['fields'])!=1) {
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException("No selectable properties found.", 1242814325);
+		}
+
+		if (count($sqlStatementParts['unions'])>0) {
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('Unsupported UNION statement encountered.', 1242814373);
+		}
+
+		$get_relationships_params['module_name'] = GeneralUtility::underscoredToUpperCamelCase($sqlStatementParts['module_name']);
+		$get_relationships_params['related_fields'] = GeneralUtility::trimExplode(',', implode('', $sqlStatementParts['fields']));
+
+		if (!empty($sqlStatementParts['additionalWhereClause'])) {
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('Unsupported additionalWhereClause query.', 1242814379);
+			//$get_relationships_params['related_module_query'] .= implode(' AND ', $sqlStatementParts['additionalWhereClause']);
+		}
+		if (!empty($sqlStatementParts['orderings'])) {
+			//$get_relationships_params['order_by'] = implode(', ', $sqlStatementParts['orderings']);
+		}
+		if (!empty($sqlStatementParts['limit'])) {
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('Unsupported limit in the relationship query.', 1242814379);
+			//$get_relationships_params['limit'] = $sqlStatementParts['limit'];
+		}
+		if (!empty($sqlStatementParts['offset'])) {
+			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('Unsupported offset in the relationship query.', 1242814379);
+			//$get_relationships_params['offset'] = $sqlStatementParts['offset'];
+		}
+		return $get_relationships_params;
 	}
 
 	/**
@@ -374,14 +534,38 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 					$selectableProperties[] = $columnMap->getColumnName();
 				}
 			}
-			//$this->addRecordTypeConstraint($className, $sql);
 			if (count($selectableProperties) == 0) {
 				throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException("No selectable properties found for module $tableName", 1242814325);
 			}
-			$sql['fields'][$tableName] = implode(',', $selectableProperties); //$tableName . '.*';
+			$sql['fields'][$tableName] = implode(',', $selectableProperties);
 			$sql['tables'][$tableName] = $tableName;
 		} elseif ($source instanceof \TYPO3\CMS\Extbase\Persistence\Generic\Qom\JoinInterface) {
-			throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend does not support joins.', 1242814326);
+			$selectorName = $source->getLeft()->getSelectorName();
+			$matches = array();
+			if (preg_match("/^sugarcrm:(.*)->(.*)$/U", $selectorName, $matches)==1) {
+				// SugarCRM support relationship
+				// MM = sugarcrm:accounts->email_addresses
+				$className = $source->getRight()->getNodeTypeName();
+				$dataMap = $this->dataMapper->getDataMap($className);
+				$tableName = $dataMap->getTableName();
+				$selectableProperties = array();
+				foreach ($dataMap->getPropertyNames() as $propertyName) {
+					$columnMap = $dataMap->getColumnMap($propertyName);
+					if ($columnMap->getTypeOfRelation() == \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\ColumnMap::RELATION_NONE || $columnMap->getTypeOfRelation() == \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\ColumnMap::RELATION_HAS_ONE) {
+						$selectableProperties[] = $columnMap->getColumnName();
+					}
+				}
+				if (count($selectableProperties) == 0) {
+					throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException("No selectable properties found for module $tableName", 1242814325);
+				}
+				$sql['fields'][$tableName] = implode(',', $selectableProperties);
+				$sql['tables'][$tableName] = $tableName;
+				$sql['method'] = 'get_relationships';
+				$sql['module_name'] = $matches[1];
+				$sql['link_field_name'] = $matches[2];
+			} else {
+				throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend does not support joins.', 1242814326);
+			}
 		}
 	}
 
@@ -658,24 +842,6 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	}
 
 	/**
-	 * Adds additional WHERE statements according to the query settings.
-	 *
-	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface $querySettings The TYPO3 CMS specific query settings
-	 * @param string $tableName The table name to add the additional where clause for
-	 * @param string &$sql
-	 * @return void
-	 */
-	protected function addAdditionalWhereClause(\TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface $querySettings, $tableName, &$sql) {
-		//$this->addVisibilityConstraintStatement($querySettings, $tableName, $sql);
-		//if ($querySettings->getRespectSysLanguage()) {
-		//	$this->addSysLanguageStatement($tableName, $sql, $querySettings);
-		//}
-		//if ($querySettings->getRespectStoragePage()) {
-		//	$this->addPageIdStatement($tableName, $sql, $querySettings->getStoragePageIds());
-		//}
-	}
-
-	/**
 	 * Transforms orderings into SQL.
 	 *
 	 * @param array $orderings An array of orderings (Tx_Extbase_Persistence_QOM_Ordering)
@@ -685,6 +851,14 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 * @return void
 	 */
 	protected function parseOrderings(array $orderings, \TYPO3\CMS\Extbase\Persistence\Generic\Qom\SourceInterface $source, array &$sql) {
+		foreach ($orderings as $propertyName => $order) {
+			$matches = array();
+			if (preg_match("/^(.*)\s+(desc|asc)$/iU", $propertyName, $matches)==1) {
+				unset($orderings[$propertyName]);
+				$orderings[$matches[1]] = strtoupper($matches[2]);
+			}
+		}
+
 		foreach ($orderings as $propertyName => $order) {
 			switch ($order) {
 				case \TYPO3\CMS\Extbase\Persistence\Generic\Qom\QueryObjectModelConstantsInterface::JCR_ORDER_ASCENDING:
@@ -749,7 +923,6 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 					$draftRow[$columnMap->getColumnName()] = '0';
 				}
 			}
-
 		}
 
 		$rows = array();

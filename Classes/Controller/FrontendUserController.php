@@ -40,6 +40,9 @@ class FrontendUserController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCon
 		if (!$user) {
 			$user = $this->frontendUserRepository->getCurrentFrontendUser();
 		}
+		if (!$user) {
+			$user = $this->frontendUserRepository->findByUid(1);
+		}
 
 		$this->view->assign('user', $user);
 	}

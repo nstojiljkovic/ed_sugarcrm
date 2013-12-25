@@ -16,6 +16,7 @@ $tempColumns['tx_edsugarcrm_crmaccount'] = Array (
 //\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('fe_users');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('fe_users', $tempColumns, 1);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('fe_users', '--div--;LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:fe_users.tabs.sugarcrm, tx_edsugarcrm_crmaccount;;;;1-1-1');
+unset($tempColumns);
 
 /**
  * Registers a Plugin to be listed in the Backend.

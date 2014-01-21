@@ -15,6 +15,13 @@
 
 			<label index="fe_users.tabs.sugarcrm">SugarCRM</label>
 			<label index="fe_users.fields.tx_edsugarcrm_crmaccount">SugarCRM account id:</label>
+
+            <label index="support_cases.list.submit_new_case">Submit new case</label>
+            <label index="support_cases.list.previous">Previous</label>
+            <label index="support_cases.list.next">Next</label>
+            <label index="support_cases.list.support_tickets">Support tickets</label>
+
+            <label index="support_cases.show.send_message">Send message</label>
 		</languageKey>
 	</data>
 </T3locallang>

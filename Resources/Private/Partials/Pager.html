@@ -7,31 +7,54 @@
 <f:renderChildren arguments="{contentArguments}"/>
 
 <f:if condition="{configuration.insertBelow}">
-    <f:render section="paginator" arguments="{pagination: pagination, variables: variables, additionalClass: 'bottom'}"/>
+    <f:render section="paginator"
+              arguments="{pagination: pagination, variables: variables, additionalClass: 'bottom'}"/>
 </f:if>
-
 <f:section name="paginator">
-    <f:if condition="{pagination.numberOfPages} > 1">
-        <nav class="pagination {additionalClass}">
-            <ul>
-                <f:if condition="{pagination.current} > 1">
-                    <f:then>
-                        <li class="prev"><h:widget.link arguments="{currentPage: pagination.previousPage}">Prev</h:widget.link></li>
-                    </f:then>
-                    <f:else>
-                        <li class="prev disabled"><a onclick="return false;" href="#">Prev</a></li>
-                    </f:else>
-                </f:if>
-                <li class="center"><f:translate key="LLL:EXT:kestenholz_base/language/fe/locallang.news.xml:news.search.pagination.page"/> {pagination.current} of {pagination.numberOfPages}</li>
-                <f:if condition="{pagination.current} == {pagination.numberOfPages}">
-                    <f:then>
-                        <li class="next disabled"><a onclick="return false;" href="#">Next</a></li>
-                    </f:then>
-                    <f:else>
-                        <li class="next"><h:widget.link arguments="{currentPage: pagination.nextPage}" class="left">Next</h:widget.link></li>
-                    </f:else>
-                </f:if>
-            </ul>
-        </nav>
+    <f:if condition="{pagination.numberOfPages} > 0">
+        <div class="col-lg-12 center">
+            <button class="btn btn-large btn-success"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.submit_new_case"/></button>
+            <div class="dataTables_paginate paging_bootstrap pagination {additionalClass}">
+                <ul class="pagination">
+                    <f:if condition="{pagination.current} > 1">
+                        <f:then>
+                            <li class="prev">
+                                <h:widget.link arguments="{currentPage: pagination.previousPage}"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.previous"/></h:widget.link>
+                            </li>
+                        </f:then>
+                        <f:else>
+                            <li class="prev disabled"><a onclick="return false;" href="#"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.previous"/></a></li>
+                        </f:else>
+                    </f:if>
+                    <f:for each="{pagination.pages}" as="page">
+                        <f:if condition="{pagination.current} == {page.number}">
+                            <f:then>
+                                <li class="active">
+                                    <h:widget.link arguments="{currentPage: page.number}" class="left">{page.number}
+                                    </h:widget.link>
+                                </li>
+                            </f:then>
+                            <f:else>
+                                <li>
+                                    <h:widget.link arguments="{currentPage: page.number}" class="left">{page.number}
+                                    </h:widget.link>
+                                </li>
+                            </f:else>
+                        </f:if>
+                    </f:for>
+                    <f:if condition="{pagination.current} == {pagination.numberOfPages}">
+                        <f:then>
+                            <li class="next disabled"><a onclick="return false;" href="#"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.next"/></a></li>
+                        </f:then>
+                        <f:else>
+                            <li class="next">
+                                <h:widget.link arguments="{currentPage: pagination.nextPage}" class="left"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.next"/>
+                                </h:widget.link>
+                            </li>
+                        </f:else>
+                    </f:if>
+                </ul>
+            </div>
+        </div>
     </f:if>
 </f:section>

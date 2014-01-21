@@ -1,0 +1,29 @@
+<div class="col-lg-12 col-md-12 col-sm-12">
+    <div class="message-view" id="white-area" style="height: auto;">
+        <div class="message">
+            <f:for each="{supportCase.emailsQueryResult}" as="email" key="index">
+                <div class="header">
+                    <div class="from"><i class="halflings user"></i> <b>{email.assignedUser.firstName}&nbsp;{email.assignedUser.lastName}</b></div>
+                    <div class="date"><i class="halflings time"></i> {email.dateSentFormatted}</div>
+                    <div class="menu"></div>
+                </div>
+                <div class="content">
+                    {email.description}
+                </div>
+                <f:debug title="Debug of MyArray">{email}</f:debug>
+            </f:for>
+            <form class="replyForm" method="post" action="">
+                <fieldset>
+                    <textarea tabindex="3" class="input-lg col-xs-12" id="message" name="body" rows="12"
+                              placeholder="Click here to reply"
+                              style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 298px;"></textarea>
+                    <br><br>
+                    <div class="actions">
+                        <button tabindex="3" type="submit" class="btn btn-success"><f:translate
+                                key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/></button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

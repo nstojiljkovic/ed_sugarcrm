@@ -34,6 +34,7 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
     protected $frontendUserRepository;
 
     /**
+     * list action
      */
     public function listAction() {
         $user = $this->frontendUserRepository->getCurrentFrontendUser(); /* @var $user \EssentialDots\EdSugarcrm\Domain\Model\FrontendUserWithCRMAccount */
@@ -44,6 +45,15 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
 
 	    $this->view->assign('user', $user);
 	    $this->view->assign('supportCases', $user->getCrmAccount() ? $user->getCrmAccount()->getCasesQueryResult() : null);
+    }
+
+    /**
+     * show action
+     *
+     * @var \EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase
+     */
+    public function showAction(\EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase) {
+        $this->view->assign('supportCase', $supportCase);
     }
 }
 ?>

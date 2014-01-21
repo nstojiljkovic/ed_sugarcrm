@@ -18,10 +18,15 @@ unset($decoratorManager);
 		'Pi1',
 		array (		// An array holding the controller-action-combinations that are accessible
 				'FrontendUser' => 'show',
-				'SupportCase' => 'list',
+				'SupportCase' => 'list, show',
 		),
 		array (
 				'FrontendUser' => 'show',
-				'SupportCase' => 'list',
+				'SupportCase' => 'list, show',
 		)
 );
+
+/**
+ * register type converter
+ */
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter('EssentialDots\\EdSugarcrm\\Property\\TypeConverter\\PersistentObjectConverter');

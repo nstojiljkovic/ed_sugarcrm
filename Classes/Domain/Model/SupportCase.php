@@ -1,5 +1,6 @@
 <?php
 namespace EssentialDots\EdSugarcrm\Domain\Model;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***************************************************************
  *  Copyright notice
@@ -91,6 +92,11 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
 	 */
 	protected $_emailsQueryResult;
 
+    /**
+     * @var \DateTime
+     */
+    protected $dateEntered;
+
 	/**
 	 * __construct
 	 *
@@ -100,6 +106,7 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
 		parent::__construct($decoratedObject);
 		//Do not remove the next line: It would break the functionality
 		$this->initStorageObjects();
+        $this->_dateSent = null;
 	}
 
 	/**
@@ -326,4 +333,26 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
 		}
 		return $this->_objectManager;
 	}
+
+    /**
+     * @param DateTime $dateEntered
+     */
+    public function setDateEntered($dateEntered){
+        $this->dateEntered = $dateEntered;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getDateEntered(){
+        return $this->dateEntered;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getDateEnteredFormatted(){
+        if (!is_object($this->dateEntered)) return '';
+        return $this->dateEntered->format('Y-m-d H:i:s');
+    }
 }

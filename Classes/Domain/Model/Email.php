@@ -207,6 +207,14 @@ class Email extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 		return $this->dateSent;
 	}
 
+    /**
+     * @return \DateTime
+     */
+    public function getDateSentFormatted() {
+        if (!is_object($this->dateEntered)) return '';
+        return $this->dateSent->format('Y-m-d H:i:s');
+    }
+
 	/**
 	 * @param string $intent
 	 */

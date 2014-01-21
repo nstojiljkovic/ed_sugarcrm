@@ -1,10 +1,57 @@
 {namespace h=Tx_ExtbaseHijax_ViewHelpers}
 
-<p>Cases:</p>
-<h:widget.paginate objects="{0: supportCases}" as="paginatedCases" configuration="{itemsPerPage: 2, insertAbove : 'TRUE', insertBelow : 'TRUE', pagerTemplate: 'EXT:ed_sugarcrm/Resources/Private/Partials/Pager.html', widgetIdentifier: 'pager'}">
-    <ul>
-        <f:for each="{paginatedCases}" as="case" key="index">
-            <li>Case: {case.uid}, {case.name}</li>
-        </f:for>
-    </ul>
+<h:widget.paginate objects="{0: supportCases}" as="paginatedCases"
+                   configuration="{itemsPerPage: settings.itemsPerPage, insertAbove : 'FALSE', insertBelow : 'TRUE', pagerTemplate: 'EXT:ed_sugarcrm/Resources/Private/Partials/Pager.html', widgetIdentifier: 'pager'}">
+    <div class="col-lg-12">
+        <div class="box">
+            <div class="box-header">
+                <h2><i class="fa fa-list"></i>
+                    <f:translate
+                            key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.support_tickets"/>
+                </h2>
+            </div>
+            <div class="box-content">
+                <ul class="tickets">
+                    <f:for each="{paginatedCases}" as="case" key="index">
+                        <li class="ticket">
+                            <f:link.action action="show" arguments="{supportCase: case}">
+                                <div class="left">
+                                    <span class="status">
+                                        <f:if condition="{case.status} == 'Closed'">
+                                            <f:then>
+                                                <span class="label label-warning">{case.status}</span>
+                                            </f:then>
+                                            <f:else>
+                                                <f:if condition="{case.status} == 'New'">
+                                                    <f:then>
+                                                        <span class="label label-success">{case.status}</span>
+                                                    </f:then>
+                                                    <f:else>
+                                                        <h:extendedServerIf
+                                                                condition="{case.status} == 'Rejected' || {case.status} == 'Duplicated'">
+                                                            <span class="label label-important">{case.status}</span>
+                                                        </h:extendedServerIf>
+                                                        <h:extendedServerIf
+                                                                condition="{case.status} == 'Assigned' || {case.status} == 'Pending input'">
+                                                            <span class="label label-info">{case.status}</span>
+                                                        </h:extendedServerIf>
+                                                    </f:else>
+                                                </f:if>
+                                            </f:else>
+                                        </f:if>
+                                    </span>
+                                    <span class="date">{case.dateEnteredFormatted}</span>
+                                    <span class="title">{case.name}</span>
+                                </div>
+                                <div class="right">
+                                    <span class="name">{case.assignedUser.firstName}&nbsp;{case.assignedUser.lastName}</span>
+                                    <span class="number">[ {case.caseNumber} ]</span>
+                                </div>
+                            </f:link.action>
+                        </li>
+                    </f:for>
+                </ul>
+            </div>
+        </div>
+    </div>
 </h:widget.paginate>

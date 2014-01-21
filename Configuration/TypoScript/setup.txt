@@ -4,4 +4,28 @@
 		features {
 			rewrittenPropertyMapper = 1
 		}
+
+		settings {
+			templates >
+			templates {
+				default {
+					name = Default
+					template = EXT:ed_sugarcrm/Resources/Private/Templates/Default
+					thumbnail =
+				}
+			}
+
+			switchableControllerActions {
+				1 {
+					value = SupportCase->list;SupportCase->show;SupportCase->new;SupportCase->create;SupportCase->edit;SupportCase->update;SupportCase->delete
+					name = Support cases
+					availableTemplates = default
+				}
+				2 {
+					value = FrontendUser->show
+					name = Front-end user requests
+					availableTemplates = default
+				}
+			}
+		}
 	}

@@ -1,0 +1,10 @@
+{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+
+<p>Cases:</p>
+<h:widget.paginate objects="{0: supportCases}" as="paginatedCases" configuration="{itemsPerPage: 2, insertAbove : 'TRUE', insertBelow : 'TRUE', pagerTemplate: 'EXT:ed_sugarcrm/Resources/Private/Partials/Pager.html', widgetIdentifier: 'pager'}">
+    <ul>
+        <f:for each="{paginatedCases}" as="case" key="index">
+            <li>Case: {case.uid}, {case.name}</li>
+        </f:for>
+    </ul>
+</h:widget.paginate>

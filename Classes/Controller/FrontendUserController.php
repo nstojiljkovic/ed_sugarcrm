@@ -25,7 +25,7 @@ namespace EssentialDots\EdSugarcrm\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class FrontendUserController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
+class FrontendUserController extends \EssentialDots\EdSugarcrm\Controller\AbstractController {
 
 	/**
 	 * @var \EssentialDots\ExtbaseDomainDecorator\Domain\Repository\FrontendUserRepository
@@ -41,7 +41,7 @@ class FrontendUserController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCon
 			$user = $this->frontendUserRepository->getCurrentFrontendUser();
 		}
 		if (!$user) {
-			$user = $this->frontendUserRepository->findByUid(1);
+			$GLOBALS['TSFE']->pageNotFoundAndExit('User not defined');
 		}
 
 		$this->view->assign('user', $user);

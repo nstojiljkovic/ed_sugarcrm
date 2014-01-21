@@ -36,7 +36,14 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
     /**
      */
     public function listAction() {
-        $user = $this->frontendUserRepository->getCurrentFrontendUser();
+        $user = $this->frontendUserRepository->getCurrentFrontendUser(); /* @var $user \EssentialDots\EdSugarcrm\Domain\Model\FrontendUserWithCRMAccount */
+
+	    if (!$user) {
+		    $GLOBALS['TSFE']->pageNotFoundAndExit('User not logged in');
+	    }
+
+	    $this->view->assign('user', $user);
+	    $this->view->assign('supportCases', $user->getCrmAccount() ? $user->getCrmAccount()->getCasesQueryResult() : null);
     }
 }
 ?>

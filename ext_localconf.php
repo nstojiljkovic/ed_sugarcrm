@@ -18,8 +18,10 @@ unset($decoratorManager);
 		'Pi1',
 		array (		// An array holding the controller-action-combinations that are accessible
 				'FrontendUser' => 'show',
+				'SupportCase' => 'list',
 		),
 		array (
 				'FrontendUser' => 'show',
+				'SupportCase' => 'list',
 		)
 );

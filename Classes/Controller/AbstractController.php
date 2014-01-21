@@ -25,162 +25,44 @@ namespace EssentialDots\EdSugarcrm\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+/**
+ *
+ *
+ * @package ed_news
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ *
+ */
 abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
-	/**
-	 * @var \Tx_ExtbaseHijax_Event_Dispatcher
-	 */
-	protected $hijaxEventDispatcher;
-	
-	/**
-	 * Injects the event dispatcher
-	 *
-	 * @param \Tx_ExtbaseHijax_Event_Dispatcher $eventDispatcher
-	 * @return void
-	 */
-	public function injectEventDispatcher(\Tx_ExtbaseHijax_Event_Dispatcher $eventDispatcher) {
-		$this->hijaxEventDispatcher = $eventDispatcher;
-	}	
-	
 	/**
 	 * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
 	 * @return void
 	 */
 	protected function setViewConfiguration(\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view) {
 		parent::setViewConfiguration($view);
-			// Template Path Override
+		// Template Path Override
 		if (isset($this->settings['template']) && !empty($this->settings['template'])) {
-			$templateRootPath = GeneralUtility::getFileAbsFileName($this->settings['template'], TRUE);
-			if (GeneralUtility::isAllowedAbsPath($templateRootPath)) {
+			$templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($this->settings['template'], TRUE);
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($templateRootPath)) {
 				$view->setTemplateRootPath($templateRootPath);
 			}
 		}
 	}
-	
-	/**
-	 * Calls the specified action method and passes the arguments.
-	 *
-	 * If the action returns a string, it is appended to the content in the
-	 * response object. If the action doesn't return anything and a valid
-	 * view exists, the view is rendered automatically.
-	 * 
-	 * @return void
-	 * @api
-	 */
-	protected function callActionMethod() {
-		
-		if (!$this->settings['enablePasswordRecovery'] && $this->request->getControllerName()=='Password') {
-			$this->forward('login', 'User');
-		}
 
-		parent::callActionMethod();
-	}	
-	
 	/**
-	 * Initializes the controller before invoking an action method.
-	 *
-	 * Override this method to solve tasks which all actions have in
-	 * common.
-	 *
-	 * @return void
-	 * @api
+	 * @param string $settingName
+	 * @return string
 	 */
-	protected function initializeAction() {
-		if (!$this->settings['doNotShowErrorsFromOtherInstances']) {
-			$this->hijaxEventDispatcher->connect('user-loginFailure', array($this, 'onUserLoginFailure'));
-		}
-		$this->hijaxEventDispatcher->connect('user-loggedIn', array($this, 'onUserLoggedIn'));
-		$this->hijaxEventDispatcher->connect('user-loggedOut', array($this, 'onUserLoggedOut'));
-	}	
-	
-	/**
-	 * @var $event \Tx_ExtbaseHijax_Event_Event
-	 */
-	public function onUserLoginFailure(\Tx_ExtbaseHijax_Event_Event $event) {
-		if (!$this->request->hasArgument('dontForwardOnEvents') || !$this->request->getArgument('dontForwardOnEvents')) {
-			if ($this->actionMethodName!='checkLoginAction') {
-				$this->forward('checkLogin', 'User', NULL, array('dontForwardOnEvents' => true));
-			}
-		}
-	}
-		
-	/**
-	 * @var $event \Tx_ExtbaseHijax_Event_Event
-	 */
-	public function onUserLoggedIn(\Tx_ExtbaseHijax_Event_Event $event) {
-		if (!$this->request->hasArgument('dontForwardOnEvents') || !$this->request->getArgument('dontForwardOnEvents')) {
-			if ($this->actionMethodName!='checkLoginAction') {
-				$this->forward('checkLogin', 'User', NULL, array('dontForwardOnEvents' => true));
-			}
-		}
-	}
-	
-	/**
-	 * @var $event \Tx_ExtbaseHijax_Event_Event
-	 */
-	public function onUserLoggedOut(\Tx_ExtbaseHijax_Event_Event $event) {
-		if (!$this->request->hasArgument('dontForwardOnEvents') || !$this->request->getArgument('dontForwardOnEvents')) {
-			if ($this->actionMethodName=="show" && $this->request->getControllerName()=="User") {
-				$this->forward('login', 'User', NULL, array('dontForwardOnEvents' => true));
-			}
-		}
-	}
-		
-	/**
-	 * Returns a valid and XSS cleaned url for redirect, checked against configuration "allowedRedirectHosts"
-	 *
-	 * @param string $url
-	 * @return string cleaned referer or empty string if not valid
-	 */
-	protected function validateRedirectUrl($url) {
-		$url = strval($url);
-		if ($url === '') {
+	protected function getSetting($settingName) {
+		if ($this->settings[$settingName]) {
+			return $this->settings[$settingName];
+		} elseif ($this->settings['default'] && $this->settings['default'][$settingName]) {
+			return $this->settings['default'][$settingName];
+		} else {
 			return NULL;
 		}
-	
-		$decodedUrl = rawurldecode($url);
-		$sanitizedUrl = GeneralUtility::removeXSS($decodedUrl);
-	
-		if ($decodedUrl !== $sanitizedUrl || preg_match('#["<>\\\]+#', $url)) {
-			return NULL;
-		}
-	
-		// Validate the URL:
-		if ($this->isRelativeUrl($url) || $this->isInCurrentDomain($url)) {
-			return $url;
-		}
-	
-		// URL is not allowed
-		return NULL;
 	}
-	
-	/**
-	 * Determines wether the URL is relative to the
-	 * current TYPO3 installation.
-	 *
-	 * @param string $url URL which needs to be checked
-	 * @return boolean Whether the URL is considered to be relative
-	 */
-	protected function isRelativeUrl($url) {
-		$parsedUrl = @parse_url($url);
-		if ($parsedUrl !== FALSE && !isset($parsedUrl['scheme']) && !isset($parsedUrl['host'])) {
-			// If the relative URL starts with a slash, we need to check if it's within the current site path
-			return (!GeneralUtility::isFirstPartOfStr($parsedUrl['path'], '/') || GeneralUtility::isFirstPartOfStr($parsedUrl['path'], GeneralUtility::getIndpEnv('TYPO3_SITE_PATH')));
-		}
-		return FALSE;
-	}
-	
-	/**
-	 * Determines whether the URL is on the current host
-	 * and belongs to the current TYPO3 installation.
-	 *
-	 * @param string $url URL to be checked
-	 * @return boolean Whether the URL belongs to the current TYPO3 installation
-	 */
-	protected function isInCurrentDomain($url) {
-		return (GeneralUtility::isOnCurrentHost($url) && GeneralUtility::isFirstPartOfStr($url, GeneralUtility::getIndpEnv('TYPO3_SITE_URL')));
-	}
-		
+
 	/**
 	 * Generate page url
 	 *
@@ -204,7 +86,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 			return $GLOBALS['TSFE']->cObj->typoLink_URL(array('parameter' => $pageId, 'useCacheHash' => 1));
 		}
 	}
-	
+
 	/**
 	 * Get the namespace of the uploaded file
 	 *
@@ -213,6 +95,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 	protected function getNamespace() {
 		$frameworkSettings = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 		return strtolower('tx_' . $frameworkSettings['extensionName'] . '_' . $frameworkSettings['pluginName']);
-	}	
+	}
 }
+
 ?>

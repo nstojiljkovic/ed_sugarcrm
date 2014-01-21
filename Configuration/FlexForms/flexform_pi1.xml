@@ -12,12 +12,31 @@
 				<type>array</type>
 				<el>
 
+					<switchableControllerActions>
+						<TCEforms>
+							<label>LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:flexform.sDef.switchableControllerAction</label>
+							<config>
+								<type>select</type>
+								<itemsProcFunc>EssentialDots\EdSugarcrm\Domain\Repository\TemplateRepository->findAllSCA</itemsProcFunc>
+								<maxitems>1</maxitems>
+								<minitems>0</minitems>
+								<multiple>0</multiple>
+								<size>1</size>
+								<onChange>reload</onChange>
+								<selicon_cols>3</selicon_cols>
+								<suppress_icons>ONLY_SELECTED</suppress_icons>
+								<disableNoMatchingValueElement>1</disableNoMatchingValueElement>
+								<multiple>0</multiple>
+							</config>
+						</TCEforms>
+					</switchableControllerActions>
+
 					<settings.template>
 						<TCEforms>
 							<label>LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:flexform.general_settings.template</label>
 							<config>
 								<type>select</type>
-								<!--<itemsProcFunc>EssentialDots\EdSugarcrm\Domain\Repository\TemplateRepository->findAllLoginTemplates</itemsProcFunc>-->
+								<itemsProcFunc>EssentialDots\EdSugarcrm\Domain\Repository\TemplateRepository->findAllPluginTemplates</itemsProcFunc>
 								<maxitems>1</maxitems>
 								<size>1</size>
 								<onChange>reload</onChange>
@@ -27,30 +46,7 @@
 							</config>
 						</TCEforms>
 					</settings.template>
-					<!--
-					<switchableControllerActions>
-					   <TCEforms>
-							<label>LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:flexform.sDef.switchableControllerAction</label>
-							<config>
-								<type>select</type>
-								<maxitems>1</maxitems>
-								<size>1</size>
-								<multiple>0</multiple>
-								<items type="array">
-									<numIndex index="1" type="array">
-										<numIndex index="0">LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:flexform.sDef.switchableControllerAction.login</numIndex>
-										<numIndex index="1">User->login;User->checkLogin;User->show;Password->recover;Password->send;Password->reset;</numIndex>
-								   </numIndex>
-								   <numIndex index="2" type="array">
-										<numIndex index="0">LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:flexform.sDef.switchableControllerAction.recovery</numIndex>
-										<numIndex index="1">Password->recover;Password->send;Password->reset;User->login;User->checkLogin;User->show;</numIndex>
-								   </numIndex>
-								</items>
-								<default>User->login;User->checkLogin;User->show;Password->recover;Password->send;Password->reset;</default>
-							</config>
-					   </TCEforms>
-					</switchableControllerActions>
-					-->
+
 				</el>
 			</ROOT>
 		</sDEF>

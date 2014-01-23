@@ -21,22 +21,24 @@
             </div>
         </h:form>
         <f:for each="{supportCase.emailsQueryResult}" as="email" key="index">
-            <div class="message">
-                <div class="header">
-                    <div class="from"><i class="halflings user"></i> <b>{email.createdByUser.firstName}&nbsp;{email.createdByUser.lastName}</b>
+            <div class="well">
+                <div class="message">
+                    <div class="header">
+                        <div class="from"><i class="halflings user"></i> <b>{email.createdByUser.firstName}&nbsp;{email.createdByUser.lastName}</b>
+                        </div>
+                        <div class="date"><i class="halflings time"></i> {email.dateSentFormatted}</div>
+                        <div class="menu"></div>
                     </div>
-                    <div class="date"><i class="halflings time"></i> {email.dateSentFormatted}</div>
-                    <div class="menu"></div>
-                </div>
-                <div class="box-content">
-                    <f:if condition="{email.descriptionHtml} == ''">
-                        <f:then>
-                            <f:format.html>{email.description}</f:format.html>
-                        </f:then>
-                        <f:else>
-                            <f:format.html>{email.descriptionHtml}</f:format.html>
-                        </f:else>
-                    </f:if>
+                    <div class="box-content">
+                        <f:if condition="{email.descriptionHtml} == ''">
+                            <f:then>
+                                <f:format.html>{email.description}</f:format.html>
+                            </f:then>
+                            <f:else>
+                                <f:format.html>{email.descriptionHtml}</f:format.html>
+                            </f:else>
+                        </f:if>
+                    </div>
                 </div>
             </div>
         </f:for>

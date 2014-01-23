@@ -68,6 +68,8 @@ class EmailController extends \EssentialDots\EdSugarcrm\Controller\AbstractContr
         $email->setDateSent(new \DateTime('NOW'));
         $email->setStatus(\EssentialDots\EdSugarcrm\Domain\Model\Email::STATUS_UNREAD);
         $email->setType(\EssentialDots\EdSugarcrm\Domain\Model\Email::TYPE_INBOUND);
+        $email->setDescriptionHtml(html_entity_decode($email->getDescription()));
+        $email->setDescription(html_entity_decode($email->getDescription()));
         $this->emailRepository->add($email);
         $persistenceManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\PersistenceManager');
         /* @var $persistenceManager \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager */

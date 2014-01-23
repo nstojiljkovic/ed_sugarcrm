@@ -1,0 +1,21 @@
+{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+
+<h:form class='extbase-form' action="create" controller="SupportCase" method="post" objectName="supportCase">
+    <div class="form-group">
+        <label class="control-label" for="supportCaseName">
+            <f:translate
+                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.new.title"/>
+        </label>
+        <div class="controls">
+            <f:form.textfield property="name" id="supportCaseName"/>
+        </div>
+    </div>
+    <f:form.hidden property="description" class="hiddenEditor"/>
+    <f:render partial="Wysiwyg"/>
+    <div class="form-actions">
+        <button class="btn btn-primary">
+            <f:translate
+                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/>
+        </button>
+    </div>
+</h:form>

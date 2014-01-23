@@ -647,7 +647,7 @@ class Account extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 	 *
 	 * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress> $emailAddresses
 	 */
-	public function getEmailsAddresses() {
+	public function getEmailAddresses() {
 		return $this->emailAddresses;
 	}
 
@@ -665,7 +665,7 @@ class Account extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 	 *
 	 * @return \EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress
 	 */
-	public function getPrimaryEmailAddress() {
+	public function getEmailAddressesPrimary() {
 		$tArr = $this->emailAddressesPrimary->toArray();
 		return count($tArr) ? $tArr[0] : NULL;
 	}
@@ -675,7 +675,7 @@ class Account extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 	 *
 	 * @param \EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress
 	 */
-	public function setPrimaryEmailAddress(\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress) {
+	public function setEmailAddressesPrimary(\EssentialDots\EdSugarcrm\Domain\Model\EmailAddress $emailAddress) {
 		foreach ($this->emailAddressesPrimary as $oldPrimaryEmailAddress) {
 			if ($emailAddress->getUid() != $oldPrimaryEmailAddress->getUid()) {
 				$this->emailAddressesPrimary->detach($oldPrimaryEmailAddress);

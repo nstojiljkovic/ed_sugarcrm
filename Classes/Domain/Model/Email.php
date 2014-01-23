@@ -43,8 +43,12 @@ class Email extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 	const TYPE_INBOUND = 'inbound';
 	const TYPE_CAMPAIGN = 'campaign';
 
+    const PARENT_CASE = 'Cases';
+    const PARENT_ACCOUNT = 'Accounts';
+
 	/**
 	 * @var string
+     * @validate NotEmpty
 	 */
 	protected $name;
 
@@ -136,6 +140,7 @@ class Email extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 
 	/**
 	 * @var string
+     * @validate NotEmpty
 	 */
 	protected $description;
 
@@ -208,10 +213,10 @@ class Email extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 	}
 
     /**
-     * @return \DateTime
+     * @return \string
      */
     public function getDateSentFormatted() {
-        if (!is_object($this->dateEntered)) return '';
+        if (!is_object($this->dateSent)) return '';
         return $this->dateSent->format('Y-m-d H:i:s');
     }
 
@@ -308,10 +313,10 @@ class Email extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 			$parentObjectRepository = NULL;
 
 			switch ($this->getParentType()) {
-				case 'Accounts':
+                case self::PARENT_ACCOUNT:
 					$parentObjectRepository = $this->getObjectManager()->get('EssentialDots\\EdSugarcrm\\Domain\\Repository\\AccountRepository'); /* @var $parentObjectRepository \EssentialDots\EdSugarcrm\Domain\Repository\AbstractRepository */
 					break;
-				case 'Cases':
+                case self::PARENT_CASE:
 					$parentObjectRepository = $this->getObjectManager()->get('EssentialDots\\EdSugarcrm\\Domain\\Repository\\SupportCaseRepository'); /* @var $parentObjectRepository \EssentialDots\EdSugarcrm\Domain\Repository\AbstractRepository */
 					break;
 				default:

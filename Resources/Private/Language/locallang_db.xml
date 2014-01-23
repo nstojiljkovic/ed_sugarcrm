@@ -22,6 +22,14 @@
             <label index="support_cases.list.support_tickets">Support tickets</label>
 
             <label index="support_cases.show.send_message">Send message</label>
+
+            <label index="support_cases.new.info_message">Your email has been sent.</label>
+            <label index="support_cases.new.title">Title</label>
+            <label index="support_cases.new.message">Message</label>
+            <label index="support_cases.new.ok">Ok</label>
+
+            <label index="support_cases.reply.info_message">Your email has been sent.</label>
+            <label index="support_cases.reply.ok">Ok</label>
 		</languageKey>
 	</data>
 </T3locallang>

@@ -28,8 +28,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 
+    const STATUS_NEW = 'New';
+
 	/**
 	 * @var string
+     * @validate NotEmpty
 	 */
 	protected $name;
 
@@ -54,6 +57,7 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
 
 	/**
 	 * @var string
+     * @validate NotEmpty
 	 */
 	protected $description;
 	/**
@@ -96,18 +100,6 @@ class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity 
      * @var \DateTime
      */
     protected $dateEntered;
-
-	/**
-	 * __construct
-	 *
-	 * @param $decoratedObject
-	 */
-	public function __construct($decoratedObject) {
-		parent::__construct($decoratedObject);
-		//Do not remove the next line: It would break the functionality
-		$this->initStorageObjects();
-        $this->_dateSent = null;
-	}
 
 	/**
 	 * Initializes all \TYPO3\CMS\Extbase\Persistence\ObjectStorage properties.

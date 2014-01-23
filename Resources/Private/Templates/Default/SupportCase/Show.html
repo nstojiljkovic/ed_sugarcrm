@@ -1,29 +1,43 @@
+{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+
 <div class="col-lg-12 col-md-12 col-sm-12">
-    <div class="message-view" id="white-area" style="height: auto;">
-        <div class="message">
-            <f:for each="{supportCase.emailsQueryResult}" as="email" key="index">
+    <div class="message-view">
+        <f:for each="{supportCase.emailsQueryResult}" as="email" key="index">
+            <div class="message">
                 <div class="header">
-                    <div class="from"><i class="halflings user"></i> <b>{email.assignedUser.firstName}&nbsp;{email.assignedUser.lastName}</b></div>
+                    <div class="from"><i class="halflings user"></i> <b>{email.createdByUser.firstName}&nbsp;{email.createdByUser.lastName}</b>
+                    </div>
                     <div class="date"><i class="halflings time"></i> {email.dateSentFormatted}</div>
                     <div class="menu"></div>
                 </div>
-                <div class="content">
-                    {email.description}
+                <div class="box-content">
+                    <f:if condition="{email.descriptionHtml} == ''">
+                        <f:then>
+                            <f:format.html>{email.description}</f:format.html>
+                        </f:then>
+                        <f:else>
+                            <f:format.html>{email.descriptionHtml}</f:format.html>
+                        </f:else>
+                    </f:if>
                 </div>
-                <f:debug title="Debug of MyArray">{email}</f:debug>
-            </f:for>
-            <form class="replyForm" method="post" action="">
-                <fieldset>
-                    <textarea tabindex="3" class="input-lg col-xs-12" id="message" name="body" rows="12"
-                              placeholder="Click here to reply"
-                              style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 298px;"></textarea>
-                    <br><br>
-                    <div class="actions">
-                        <button tabindex="3" type="submit" class="btn btn-success"><f:translate
-                                key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/></button>
-                    </div>
-                </fieldset>
-            </form>
+            </div>
+        </f:for>
+        <div class="box-content">
+            <h:form class='extbase-form' action="create" controller="Email" method="post" objectName="email">
+                <f:form.hidden property="description" class="hiddenEditor"/>
+                <f:form.hidden property="parentType" value="{parentCase}"/>
+                <f:form.hidden property="parentId" value="{supportCase.uid}"/>
+                <f:form.hidden property="name" value="{supportCase.name}"/>
+                <f:form.hidden property="toAddrs" value="{toEmail}"/>
+                <f:form.hidden property="assignedUser" value="{assignedUser}"/>
+                <f:render partial="Wysiwyg"/>
+                <div class="form-actions">
+                    <button tabindex="3" class="btn btn-primary">
+                        <f:translate
+                                key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/>
+                    </button>
+                </div>
+            </h:form>
         </div>
     </div>
 </div>

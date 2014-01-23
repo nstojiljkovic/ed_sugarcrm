@@ -14,7 +14,7 @@
                 <ul class="tickets">
                     <f:for each="{paginatedCases}" as="case" key="index">
                         <li class="ticket">
-                            <f:link.action action="show" arguments="{supportCase: case}">
+                            <f:link.action action="show" arguments="{uid: case.uid}">
                                 <div class="left">
                                     <span class="status">
                                         <f:if condition="{case.status} == 'Closed'">
@@ -27,25 +27,32 @@
                                                         <span class="label label-success">{case.status}</span>
                                                     </f:then>
                                                     <f:else>
-                                                        <h:extendedServerIf
-                                                                condition="{case.status} == 'Rejected' || {case.status} == 'Duplicated'">
-                                                            <span class="label label-important">{case.status}</span>
-                                                        </h:extendedServerIf>
-                                                        <h:extendedServerIf
-                                                                condition="{case.status} == 'Assigned' || {case.status} == 'Pending input'">
-                                                            <span class="label label-info">{case.status}</span>
-                                                        </h:extendedServerIf>
+                                                        <f:if condition="{case.status} == 'Rejected'">
+                                                            <f:then>
+                                                                <span class="label label-important">{case.status}</span>
+                                                            </f:then>
+                                                            <f:else>
+                                                                <f:if condition="{case.status} == 'Duplicated'">
+                                                                    <f:then>
+                                                                        <span class="label label-important">{case.status}</span>
+                                                                    </f:then>
+                                                                    <f:else>
+                                                                        <span class="label label-info">{case.status}</span>
+                                                                    </f:else>
+                                                                </f:if>
+                                                            </f:else>
+                                                        </f:if>
                                                     </f:else>
                                                 </f:if>
                                             </f:else>
                                         </f:if>
                                     </span>
-                                    <span class="date">{case.dateEnteredFormatted}</span>
+                                    <span class="date">{case.dateenteredformatted}</span>
                                     <span class="title">{case.name}</span>
                                 </div>
                                 <div class="right">
-                                    <span class="name">{case.assignedUser.firstName}&nbsp;{case.assignedUser.lastName}</span>
-                                    <span class="number">[ {case.caseNumber} ]</span>
+                                    <span class="name">{case.assigneduser.firstname}&nbsp;{case.assigneduser.lastname}</span>
+                                    <span class="number">[ {case.casenumber} ]</span>
                                 </div>
                             </f:link.action>
                         </li>
@@ -55,3 +62,4 @@
         </div>
     </div>
 </h:widget.paginate>
+<f:link.action action="new" class="btn btn-large btn-success"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.submit_new_case"/></f:link.action>

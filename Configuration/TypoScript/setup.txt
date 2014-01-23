@@ -19,7 +19,7 @@
 
 			switchableControllerActions {
 				1 {
-					value = SupportCase->list;SupportCase->show;SupportCase->new;SupportCase->create;SupportCase->edit;SupportCase->update;SupportCase->delete
+					value = SupportCase->list;SupportCase->show;SupportCase->new;SupportCase->create;SupportCase->edit;SupportCase->info;SupportCase->update;SupportCase->delete;Email->create;Email->info
 					name = Support cases
 					availableTemplates = default
 				}

@@ -2,6 +2,24 @@
 
 <div class="col-lg-12 col-md-12 col-sm-12">
     <div class="message-view">
+        <h:form class='extbase-form' action="update" controller="SupportCase" method="post">
+            <f:form.hidden name="uid" value="{supportCase.uid}"/>
+            <f:form.hidden name="status" value="{newStatus}"/>
+            <div class="form-actions">
+                <button tabindex="3" class="btn btn-primary">
+                    <f:if condition="{newStatus} == 'Closed'">
+                        <f:then>
+                            <f:translate
+                                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.close_case"/>
+                        </f:then>
+                        <f:else>
+                            <f:translate
+                                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.open_case"/>
+                        </f:else>
+                    </f:if>
+                </button>
+            </div>
+        </h:form>
         <f:for each="{supportCase.emailsQueryResult}" as="email" key="index">
             <div class="message">
                 <div class="header">
@@ -23,21 +41,44 @@
             </div>
         </f:for>
         <div class="box-content">
-            <h:form class='extbase-form' action="create" controller="Email" method="post" objectName="email">
-                <f:form.hidden property="description" class="hiddenEditor"/>
-                <f:form.hidden property="parentType" value="{parentCase}"/>
-                <f:form.hidden property="parentId" value="{supportCase.uid}"/>
-                <f:form.hidden property="name" value="{supportCase.name}"/>
-                <f:form.hidden property="toAddrs" value="{toEmail}"/>
-                <f:form.hidden property="assignedUser" value="{assignedUser}"/>
-                <f:render partial="Wysiwyg"/>
+            <h:form class='extbase-form' action="update" controller="SupportCase" method="post">
+                <f:form.hidden name="uid" value="{supportCase.uid}"/>
+                <f:form.hidden name="status" value="{newStatus}"/>
                 <div class="form-actions">
                     <button tabindex="3" class="btn btn-primary">
-                        <f:translate
-                                key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/>
+                        <f:if condition="{newStatus} == 'Closed'">
+                            <f:then>
+                                <f:translate
+                                        key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.close_case"/>
+                            </f:then>
+                            <f:else>
+                                <f:translate
+                                        key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.open_case"/>
+                            </f:else>
+                        </f:if>
                     </button>
                 </div>
             </h:form>
+            <f:if condition="{newStatus} == 'Closed'">
+                <f:then>
+                    <h:form class='extbase-form' action="create" controller="Email" method="post" objectName="email">
+                        <f:form.hidden property="description" class="hiddenEditor"/>
+                        <f:form.hidden property="parentType" value="{parentCase}"/>
+                        <f:form.hidden property="parentId" value="{supportCase.uid}"/>
+                        <f:form.hidden property="name" value="{supportCase.name}"/>
+                        <f:form.hidden property="toAddrs" value="{toEmail}"/>
+                        <f:form.hidden property="assignedUser" value="{assignedUser}"/>
+                        <f:render partial="Wysiwyg"/>
+                        <div class="form-actions">
+                            <button tabindex="3" class="btn btn-primary">
+                                <f:translate
+                                        key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/>
+                            </button>
+                        </div>
+                    </h:form>
+                </f:then>
+            </f:if>
         </div>
+
     </div>
 </div>

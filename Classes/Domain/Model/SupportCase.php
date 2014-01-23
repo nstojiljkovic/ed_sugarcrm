@@ -29,6 +29,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class SupportCase extends \EssentialDots\EdSugarcrm\Domain\Model\AbstractEntity {
 
     const STATUS_NEW = 'New';
+    const STATUS_ASSIGNED = 'Assigned';
+    const STATUS_CLOSED = 'Closed';
+    const STATUS_PENDING_INPUT = 'Pending input';
+    const STATUS_REJECTED = 'Rejected';
+    const STATUS_DUPLICATED = 'Duplicated';
+
 
 	/**
 	 * @var string

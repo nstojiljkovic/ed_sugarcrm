@@ -25,7 +25,8 @@ namespace EssentialDots\EdSugarcrm\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\AbstractController {
+class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\AbstractController
+{
 
     /**
      * @var \EssentialDots\ExtbaseDomainDecorator\Domain\Repository\FrontendUserRepository
@@ -48,10 +49,11 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
     /**
      * list action
      */
-    public function listAction() {
+    public function listAction()
+    {
         $user = $this->getUser();
-	    $this->view->assign('user', $user);
-	    $this->view->assign('supportCases', $user->getCrmAccount() ? $user->getCrmAccount()->getCasesQueryResult() : null);
+        $this->view->assign('user', $user);
+        $this->view->assign('supportCases', $user->getCrmAccount() ? $user->getCrmAccount()->getCasesQueryResult() : null);
     }
 
     /**
@@ -59,7 +61,8 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
      *
      * @param string $uid
      */
-    public function showAction($uid) {
+    public function showAction($uid)
+    {
         $user = $this->getUser();
         $this->view->assign('user', $user);
         $supportCases = $this->supportCaseRepository->findByUid($uid);
@@ -68,22 +71,35 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
         $emails = $supportCases->getEmails();
         $toEmail = $this->settings['SugarCRMBackend']['email'];
         $assignedUser = NULL;
-        foreach($emails as $email){
+        foreach ($emails as $email) {
             /** @var \EssentialDots\EdSugarcrm\Domain\Model\Email $email */
-            if (strpos($email->getFromAddr(), $user->getEmail()) === FALSE){
+            if (strpos($email->getFromAddr(), $user->getEmail()) === FALSE) {
                 $toEmail = $email->getFromAddr();
             }
             $helper = $email->getAssignedUser();
-            if (!empty($helper)){
+            if (!empty($helper)) {
                 $assignedUser = $helper;
             }
-            if ($email->getDescriptionHtml() == ''){
+            if ($email->getDescriptionHtml() == '') {
                 $email->setDescriptionHtml(html_entity_decode($email->getDescription()));
             }
             $helper = explode("<div><hr /></div>", $email->getDescriptionHtml());
-            $email->setDescriptionHtml(str_replace('&nbsp;', '', str_replace("<br /><br />","<br />", $helper[0])));
+            $email->setDescriptionHtml(str_replace('&nbsp;', '', str_replace("<br /><br />", "<br />", $helper[0])));
+        }
+        $newStatus = \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_ASSIGNED;
+        $helper = $supportCases->getAssignedUser();
+        if (empty($helper)) {
+            $newStatus = \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_NEW;
+        }
+        $status = $supportCases->getStatus();
+        if ($status == \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_NEW ||
+            $status == \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_ASSIGNED ||
+            $status == \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_PENDING_INPUT
+        ) {
+            $newStatus = \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_CLOSED;
         }
         $this->view->assign('toEmail', $toEmail);
+        $this->view->assign('newStatus', $newStatus);
         $this->view->assign('assignedUser', $assignedUser);
         $this->view->assign('parentCase', \EssentialDots\EdSugarcrm\Domain\Model\Email::PARENT_CASE);
     }
@@ -92,7 +108,8 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
      * new action
      *
      */
-    public function newAction() {
+    public function newAction()
+    {
         $this->getUser();
     }
 
@@ -101,7 +118,8 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
      *
      * @var \EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase
      */
-    public function createAction(\EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase) {
+    public function createAction(\EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase)
+    {
         $user = $this->getUser();
         $id = $user->getCrmAccount()->getUid();
         $account = $this->accountRepository->findByUid($id);
@@ -126,19 +144,55 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
     }
 
     /**
+     * update action
+     *
+     * @param string $uid
+     * @param string $status
+     */
+    public function updateAction($uid, $status){
+        $supportCase = $this->supportCaseRepository->findByUid($uid);
+        $supportCase->setStatus($status);
+        $this->supportCaseRepository->update($supportCase);
+        $persistenceManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\PersistenceManager');
+        /* @var $persistenceManager \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager */
+        $persistenceManager->persistAll();
+        if ($supportCase->getStatus() == \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_CLOSED){
+            $this->forward('infoClosed');
+        }else{
+            $this->forward('infoReopened');
+        }
+    }
+
+    /**
      * info action
      */
-    public function infoAction() {}
+    public function infoAction(){
+    }
+
+    /**
+     * info action
+     */
+    public function infoClosedAction(){
+    }
+
+    /**
+     * info action
+     */
+    public function infoReopenedAction(){
+    }
 
     /**
      * @return \EssentialDots\EdSugarcrm\Domain\Model\FrontendUserWithCRMAccount|\EssentialDots\EdTravel\Domain\Model\FrontendUserWithPermissionSets|\EssentialDots\ExtbaseDomainDecorator\Domain\Model\AbstractFrontendUser|\EssentialDots\ExtbaseDomainDecorator\Domain\Model\FrontendUser|null
      */
-    protected function getUser(){
-        $user = $this->frontendUserRepository->getCurrentFrontendUser(); /* @var $user \EssentialDots\EdSugarcrm\Domain\Model\FrontendUserWithCRMAccount */
+    protected function getUser()
+    {
+        $user = $this->frontendUserRepository->getCurrentFrontendUser();
+        /* @var $user \EssentialDots\EdSugarcrm\Domain\Model\FrontendUserWithCRMAccount */
         if (!$user) {
             $GLOBALS['TSFE']->pageNotFoundAndExit('User not logged in');
         }
         return $user;
     }
 }
+
 ?>

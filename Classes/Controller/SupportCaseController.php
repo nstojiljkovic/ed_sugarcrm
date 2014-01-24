@@ -41,12 +41,6 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
     protected $supportCaseRepository;
 
     /**
-     * @var \EssentialDots\EdSugarcrm\Domain\Repository\AccountRepository
-     * @inject
-     */
-    protected $accountRepository;
-
-    /**
      * list action
      */
     public function listAction()
@@ -76,6 +70,7 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
             if (strpos($email->getFromAddr(), $user->getEmail()) === FALSE) {
                 $toEmail = $email->getFromAddr();
             }
+            $a = $email->getCreatedByUser()->getFirstName();
             $helper = $email->getAssignedUser();
             if (!empty($helper)) {
                 $assignedUser = $helper;
@@ -116,30 +111,37 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
     /**
      * create action
      *
-     * @var \EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase
+     * @param \EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase
      */
-    public function createAction(\EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase)
-    {
-        $user = $this->getUser();
-        $id = $user->getCrmAccount()->getUid();
-        $account = $this->accountRepository->findByUid($id);
-        $supportCase->setAccount($account);
-        $supportCase->setStatus(\EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_NEW);
-        $this->supportCaseRepository->add($supportCase);
+    public function createAction(\EssentialDots\EdSugarcrm\Domain\Model\SupportCase $supportCase){
         $persistenceManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\PersistenceManager');
         /* @var $persistenceManager \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager */
+        $this->supportCaseRepository->generateNewSupportCase($supportCase);
+        $this->supportCaseRepository->add($supportCase);
         $persistenceManager->persistAll();
-        $email = $this->objectManager->get('EssentialDots\\EdSugarcrm\\Domain\\Model\\Email');
-        /* @var $email \EssentialDots\EdSugarcrm\Domain\Model\Email */
-        $email->setDescription($supportCase->getDescription());
-        $email->setParentType(\EssentialDots\EdSugarcrm\Domain\Model\Email::PARENT_CASE);
-        $email->setParentId($supportCase->getUid());
-        $email->setName($supportCase->getName());
-        $email->setDescriptionHtml(html_entity_decode($email->getDescription()));
-        $email->setToAddrs($this->settings['SugarCRMBackend']['email']);
-        $emailController = $this->objectManager->get('EssentialDots\\EdSugarcrm\\Controller\\EmailController');
-        /* @var $emailController \EssentialDots\EdSugarcrm\Controller\EmailController */
-        $emailController->createAction($email, TRUE);
+        $this->supportCaseRepository->addFirstEmail($supportCase, $email, $this->settings);
+        $persistenceManager->persistAll();
+        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
+        $emailView = $this->objectManager->get('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+
+        $templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('EXT:ed_sugarcrm/Resources/Private/Templates/') . 'Email/SupportEmail.html';
+        $emailView->setTemplatePathAndFilename($templatePathAndFilename);
+        $emailView->assignMultiple(array(
+            'link' => $this->settings['SugarCRMBackend']['case_url'] . $supportCase->getUid(),
+            'case' => $supportCase->getName()
+        ));
+        $emailBody = $emailView->render();
+        $emailBody;
+
+        /** @var $message \TYPO3\CMS\Core\Mail\MailMessage */
+        $message = $this->objectManager->get('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+        $message->setTo($this->settings['SugarCRMBackend']['email'])
+            ->setFrom($email->getFromAddr())
+            ->setSubject($supportCase->getName());
+        $message->setBody($emailBody, 'text/html');
+
+        $message->send();
+
         $this->forward('info');
     }
 

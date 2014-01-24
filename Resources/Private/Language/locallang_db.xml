@@ -37,6 +37,8 @@
 
             <label index="support_cases.reply.info_message">Your email has been sent.</label>
             <label index="support_cases.reply.ok">Ok</label>
+
+            <label index="support_email.info">New case has been created:</label>
 		</languageKey>
 	</data>
 </T3locallang>

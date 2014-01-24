@@ -27,4 +27,50 @@ namespace EssentialDots\EdSugarcrm\Domain\Repository;
 
 class EmailRepository extends \EssentialDots\EdSugarcrm\Domain\Repository\AbstractRepository {
 
+    /**
+     * @var \EssentialDots\ExtbaseDomainDecorator\Domain\Repository\FrontendUserRepository
+     * @inject
+     */
+    protected $frontendUserRepository;
+
+    /**
+     * @var \EssentialDots\EdSugarcrm\Domain\Repository\AccountRepository
+     * @inject
+     */
+    protected $accountRepository;
+
+    public function generateNewEmail(\EssentialDots\EdSugarcrm\Domain\Model\Email &$email){
+        $user = $this->getUser();
+        $id = $user->getCrmAccount()->getUid();
+        $account = $this->accountRepository->findByUid($id);
+        /** @var \EssentialDots\EdSugarcrm\Domain\Model\Account $account*/
+        $email->setAccount($account);
+        $helper = $account->getPrimaryEmailAddress();
+        if (!empty($helper)){
+            $primaryEmail = $helper->getEmailAddress();
+        }else{
+            $primaryEmail = $user->getEmail();
+        }
+        $email->setCreatedByUser($user);
+        $email->setModifiedByUser($user->getCrmAccount());
+        $email->setFromAddr($primaryEmail);
+        $email->setReplyToAddr($primaryEmail);
+        $email->setDateSent(new \DateTime('NOW'));
+        $email->setStatus(\EssentialDots\EdSugarcrm\Domain\Model\Email::STATUS_UNREAD);
+        $email->setType(\EssentialDots\EdSugarcrm\Domain\Model\Email::TYPE_INBOUND);
+        $email->setDescriptionHtml(html_entity_decode($email->getDescription()));
+        $email->setDescription(html_entity_decode($email->getDescription()));
+    }
+
+    /**
+     * @return \EssentialDots\EdSugarcrm\Domain\Model\FrontendUserWithCRMAccount|\EssentialDots\EdTravel\Domain\Model\FrontendUserWithPermissionSets|\EssentialDots\ExtbaseDomainDecorator\Domain\Model\AbstractFrontendUser|\EssentialDots\ExtbaseDomainDecorator\Domain\Model\FrontendUser|null
+     */
+    protected function getUser(){
+        $user = $this->frontendUserRepository->getCurrentFrontendUser(); /* @var $user \EssentialDots\EdSugarcrm\Domain\Model\FrontendUserWithCRMAccount */
+        if (!$user) {
+            $GLOBALS['TSFE']->pageNotFoundAndExit('User not logged in');
+        }
+        return $user;
+    }
+
 }

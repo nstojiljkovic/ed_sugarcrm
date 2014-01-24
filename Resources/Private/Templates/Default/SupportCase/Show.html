@@ -32,10 +32,10 @@
                     <div class="box-content">
                         <f:if condition="{email.descriptionHtml} == ''">
                             <f:then>
-                                <f:format.html>{email.description}</f:format.html>
+                                <f:format.raw>{email.description}</f:format.raw>
                             </f:then>
                             <f:else>
-                                <f:format.html>{email.descriptionHtml}</f:format.html>
+                                <f:format.raw>{email.descriptionHtml}</f:format.raw>
                             </f:else>
                         </f:if>
                     </div>

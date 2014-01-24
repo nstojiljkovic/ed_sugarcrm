@@ -70,7 +70,6 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
             if (strpos($email->getFromAddr(), $user->getEmail()) === FALSE) {
                 $toEmail = $email->getFromAddr();
             }
-            $a = $email->getCreatedByUser()->getFirstName();
             $helper = $email->getAssignedUser();
             if (!empty($helper)) {
                 $assignedUser = $helper;

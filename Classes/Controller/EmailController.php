@@ -63,8 +63,10 @@ class EmailController extends \EssentialDots\EdSugarcrm\Controller\AbstractContr
         }else{
             $primaryEmail = $user->getEmail();
         }
-        $email->setCreatedByUser($user);
+        $email->setCreatedByUser($user->getCrmAccount());
+        $email->setModifiedByUser($user->getCrmAccount());
         $email->setFromAddr($primaryEmail);
+        $email->setReplyToAddr($primaryEmail);
         $email->setDateSent(new \DateTime('NOW'));
         $email->setStatus(\EssentialDots\EdSugarcrm\Domain\Model\Email::STATUS_UNREAD);
         $email->setType(\EssentialDots\EdSugarcrm\Domain\Model\Email::TYPE_INBOUND);

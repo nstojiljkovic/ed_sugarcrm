@@ -78,8 +78,6 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
             if ($email->getDescriptionHtml() == '') {
                 $email->setDescriptionHtml(html_entity_decode($email->getDescription()));
             }
-            $helper = explode("<div><hr /></div>", $email->getDescriptionHtml());
-            $email->setDescriptionHtml(str_replace('&nbsp;', '', str_replace("<br /><br />", "<br />", $helper[0])));
         }
         $newStatus = \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_ASSIGNED;
         $helper = $supportCases->getAssignedUser();

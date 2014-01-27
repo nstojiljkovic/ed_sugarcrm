@@ -77,6 +77,10 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
             if ($email->getDescriptionHtml() == '') {
                 $email->setDescriptionHtml(html_entity_decode($email->getDescription()));
             }
+            $doc = new \DOMDocument();
+            $doc->loadHTML($email->getDescriptionHtml());
+            $this->parseHTML($doc);
+            $email->setDescriptionHtml($doc->saveHTML());
         }
         $newStatus = \EssentialDots\EdSugarcrm\Domain\Model\SupportCase::STATUS_ASSIGNED;
         $helper = $supportCases->getAssignedUser();
@@ -94,6 +98,38 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
         $this->view->assign('newStatus', $newStatus);
         $this->view->assign('assignedUser', $assignedUser);
         $this->view->assign('parentCase', \EssentialDots\EdSugarcrm\Domain\Model\Email::PARENT_CASE);
+    }
+
+    /**
+     * Function for removing signatures from email list.
+     *
+     * @param \DOMNode $node
+     * @return bool
+     */
+    protected function parseHTML(&$node){
+        /** @var \DOMNode $node */
+        if ($node->nodeName != 'hr'){
+            $result = TRUE;
+            $delete = array();
+            foreach($node->childNodes as $child){
+                /** @var \DOMNode $child */
+                if ($result){
+                    if (!$result = $this->parseHTML($child)){
+                        if ($child->nodeName == 'hr'){
+                            array_push($delete, $child);
+                        }
+                    }
+                }else{
+                    array_push($delete, $child);
+                }
+            }
+            foreach ($delete as $deleteChild){
+                $node->removeChild($deleteChild);
+            }
+            return $result;
+        }else{
+            return FALSE;
+        }
     }
 
     /**

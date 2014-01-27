@@ -10,11 +10,11 @@
                     <f:if condition="{newStatus} == 'Closed'">
                         <f:then>
                             <f:translate
-                                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.close_case"/>
+                                    key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.show.close_case"/>
                         </f:then>
                         <f:else>
                             <f:translate
-                                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.open_case"/>
+                                    key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.show.open_case"/>
                         </f:else>
                     </f:if>
                 </button>
@@ -51,11 +51,11 @@
                         <f:if condition="{newStatus} == 'Closed'">
                             <f:then>
                                 <f:translate
-                                        key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.close_case"/>
+                                        key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.show.close_case"/>
                             </f:then>
                             <f:else>
                                 <f:translate
-                                        key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.open_case"/>
+                                        key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.show.open_case"/>
                             </f:else>
                         </f:if>
                     </button>
@@ -64,17 +64,21 @@
             <f:if condition="{newStatus} == 'Closed'">
                 <f:then>
                     <h:form class='extbase-form' action="create" controller="Email" method="post" objectName="email">
-                        <f:form.hidden property="description" class="hiddenEditor"/>
                         <f:form.hidden property="parentType" value="{parentCase}"/>
                         <f:form.hidden property="parentId" value="{supportCase.uid}"/>
                         <f:form.hidden property="name" value="{supportCase.name}"/>
                         <f:form.hidden property="toAddrs" value="{toEmail}"/>
                         <f:form.hidden property="assignedUser" value="{assignedUser}"/>
-                        <f:render partial="Wysiwyg"/>
+                        <f:render partial="FormElements/TextArea" arguments="{
+                            property: 'description',
+                            icon: false,
+                            required: 0,
+                            label: '{f:translate(key: \'LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.new.message\')}'
+                        }" />
                         <div class="form-actions">
                             <button tabindex="3" class="btn btn-primary">
                                 <f:translate
-                                        key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/>
+                                        key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.show.send_message"/>
                             </button>
                         </div>
                     </h:form>

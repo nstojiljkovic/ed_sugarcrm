@@ -152,16 +152,18 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
         $this->supportCaseRepository->generateNewSupportCase($supportCase);
         $this->supportCaseRepository->add($supportCase);
         $persistenceManager->persistAll();
+        /** @var \EssentialDots\EdSugarcrm\Domain\Model\Email $email */
         $this->supportCaseRepository->addFirstEmail($supportCase, $email, $this->settings);
         $persistenceManager->persistAll();
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
         $emailView = $this->objectManager->get('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
-
         $templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('EXT:ed_sugarcrm/Resources/Private/Templates/') . 'Email/SupportEmail.html';
         $emailView->setTemplatePathAndFilename($templatePathAndFilename);
         $emailView->assignMultiple(array(
             'link' => $this->settings['SugarCRMBackend']['case_url'] . $supportCase->getUid(),
-            'case' => $supportCase->getName()
+            'case' => $supportCase->getName(),
+            'firstName' => $email->getCreatedByUser()->getFirstName(),
+            'lastName' => $email->getCreatedByUser()->getLastName()
         ));
         $emailBody = $emailView->render();
         $emailBody;

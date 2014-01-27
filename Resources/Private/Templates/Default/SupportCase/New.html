@@ -4,18 +4,22 @@
     <div class="form-group">
         <label class="control-label" for="supportCaseName">
             <f:translate
-                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.new.title"/>
+                    key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.new.title"/>
         </label>
         <div class="controls">
             <f:form.textfield property="name" id="supportCaseName"/>
         </div>
     </div>
-    <f:form.hidden property="description" class="hiddenEditor"/>
-    <f:render partial="Wysiwyg"/>
+    <f:render partial="FormElements/TextArea" arguments="{
+				property: 'description',
+				icon: false,
+				required: 0,
+				label: '{f:translate(key: \'LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.new.message\')}'
+			}" />
     <div class="form-actions">
         <button class="btn btn-primary">
             <f:translate
-                    key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.show.send_message"/>
+                    key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.show.send_message"/>
         </button>
     </div>
 </h:form>

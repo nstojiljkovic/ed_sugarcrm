@@ -18,11 +18,11 @@
                     <f:if condition="{pagination.current} > 1">
                         <f:then>
                             <li class="prev">
-                                <h:widget.link arguments="{currentPage: pagination.previousPage}"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.previous"/></h:widget.link>
+                                <h:widget.link arguments="{currentPage: pagination.previousPage}"><f:translate key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.list.previous"/></h:widget.link>
                             </li>
                         </f:then>
                         <f:else>
-                            <li class="prev disabled"><a onclick="return false;" href="#"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.previous"/></a></li>
+                            <li class="prev disabled"><a onclick="return false;" href="#"><f:translate key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.list.previous"/></a></li>
                         </f:else>
                     </f:if>
                     <f:for each="{pagination.pages}" as="page">
@@ -43,11 +43,11 @@
                     </f:for>
                     <f:if condition="{pagination.current} == {pagination.numberOfPages}">
                         <f:then>
-                            <li class="next disabled"><a onclick="return false;" href="#"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.next"/></a></li>
+                            <li class="next disabled"><a onclick="return false;" href="#"><f:translate key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.list.next"/></a></li>
                         </f:then>
                         <f:else>
                             <li class="next">
-                                <h:widget.link arguments="{currentPage: pagination.nextPage}" class="left"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.next"/>
+                                <h:widget.link arguments="{currentPage: pagination.nextPage}" class="left"><f:translate key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.list.next"/>
                                 </h:widget.link>
                             </li>
                         </f:else>

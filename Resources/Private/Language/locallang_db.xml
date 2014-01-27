@@ -6,39 +6,6 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="flexform.general_settings">General settings</label>
-			<label index="flexform.general_settings.template">Template:</label>
-			<label index="flexform.template.login.default">Default</label>
-
-			<label index="flexform.sDef.switchableControllerAction">Default view:</label>
-			<label index="flexform.sDef.switchableControllerAction.user">User panel</label>
-
-			<label index="fe_users.tabs.sugarcrm">SugarCRM</label>
-			<label index="fe_users.fields.tx_edsugarcrm_crmaccount">SugarCRM account id:</label>
-
-            <label index="support_cases.list.submit_new_case">Submit new case</label>
-            <label index="support_cases.list.previous">Previous</label>
-            <label index="support_cases.list.next">Next</label>
-            <label index="support_cases.list.support_tickets">Support tickets</label>
-
-            <label index="support_cases.show.send_message">Send message</label>
-            <label index="support_cases.show.close_case">Close case</label>
-            <label index="support_cases.show.open_case">Reopen case</label>
-
-            <label index="support_cases.edit.info_message_reopened">Case has been reopened.</label>
-            <label index="support_cases.edit.ok_reopened">Ok</label>
-            <label index="support_cases.edit.info_message_closed">Case has been closed.</label>
-            <label index="support_cases.edit.ok_closed">Ok</label>
-
-            <label index="support_cases.new.info_message">Your email has been sent.</label>
-            <label index="support_cases.new.title">Title</label>
-            <label index="support_cases.new.message">Message</label>
-            <label index="support_cases.new.ok">Ok</label>
-
-            <label index="support_cases.reply.info_message">Your email has been sent.</label>
-            <label index="support_cases.reply.ok">Ok</label>
-
-            <label index="support_email.info">New case has been created:</label>
 		</languageKey>
 	</data>
 </T3locallang>

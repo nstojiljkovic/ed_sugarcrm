@@ -1,13 +1,13 @@
 {namespace h=Tx_ExtbaseHijax_ViewHelpers}
 
 <h:widget.paginate objects="{0: supportCases}" as="paginatedCases"
-                   configuration="{itemsPerPage: settings.itemsPerPage, insertAbove : 'FALSE', insertBelow : 'TRUE', pagerTemplate: 'EXT:ed_sugarcrm/Resources/Private/Partials/Pager.html', widgetIdentifier: 'pager'}">
+                   configuration="{itemsPerPage: settings.itemsPerPage, insertAbove : 'FALSE', insertBelow : 'TRUE', pagerTemplate: 'EXT:capri_template/Resources/Private/Templates/EdSugarcrm/Partials/Pager.html', widgetIdentifier: 'pager'}">
     <div class="col-lg-12">
         <div class="box">
             <div class="box-header">
                 <h2><i class="fa fa-list"></i>
                     <f:translate
-                            key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.support_tickets"/>
+                            key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.list.support_tickets"/>
                 </h2>
             </div>
             <div class="box-content">
@@ -62,4 +62,4 @@
         </div>
     </div>
 </h:widget.paginate>
-<f:link.action action="new" class="btn btn-large btn-success"><f:translate key="LLL:EXT:ed_sugarcrm/Resources/Private/Language/locallang_db.xml:support_cases.list.submit_new_case"/></f:link.action>
+<f:link.action action="new" class="btn btn-large btn-success"><f:translate key="LLL:EXT:capri_base/language/fe/locallang.ed_sugarcrm.xml:support_cases.list.submit_new_case"/></f:link.action>

@@ -58,8 +58,15 @@ class EmailRepository extends \EssentialDots\EdSugarcrm\Domain\Repository\Abstra
         $email->setDateSent(new \DateTime('NOW'));
         $email->setStatus(\EssentialDots\EdSugarcrm\Domain\Model\Email::STATUS_UNREAD);
         $email->setType(\EssentialDots\EdSugarcrm\Domain\Model\Email::TYPE_INBOUND);
-        $email->setDescriptionHtml(html_entity_decode($email->getDescription()));
-        $email->setDescription(html_entity_decode($email->getDescription()));
+        $templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('EXT:ed_sugarcrm/Resources/Private/Templates/') . 'Email/SupportEmailSignature.html';
+        $emailView = $this->objectManager->get('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+        $emailView->setTemplatePathAndFilename($templatePathAndFilename);
+        $emailView->assignMultiple(array(
+            'name' => $user->getCrmAccount()->getName()
+        ));
+        $emailSignature = $emailView->render();
+        $email->setDescriptionHtml(html_entity_decode($email->getDescription()) . $emailSignature);
+        $email->setDescription(html_entity_decode($email->getDescription()) . $emailSignature);
     }
 
     /**

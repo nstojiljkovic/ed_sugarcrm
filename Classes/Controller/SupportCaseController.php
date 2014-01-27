@@ -161,12 +161,9 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
         $emailView->setTemplatePathAndFilename($templatePathAndFilename);
         $emailView->assignMultiple(array(
             'link' => $this->settings['SugarCRMBackend']['case_url'] . $supportCase->getUid(),
-            'case' => $supportCase->getName(),
-            'firstName' => $email->getCreatedByUser()->getFirstName(),
-            'lastName' => $email->getCreatedByUser()->getLastName()
+            'case' => $supportCase->getName()
         ));
         $emailBody = $emailView->render();
-        $emailBody;
 
         /** @var $message \TYPO3\CMS\Core\Mail\MailMessage */
         $message = $this->objectManager->get('TYPO3\\CMS\\Core\\Mail\\MailMessage');

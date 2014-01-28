@@ -43,8 +43,7 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
     /**
      * list action
      */
-    public function listAction()
-    {
+    public function listAction(){
         $user = $this->getUser();
         $this->view->assign('user', $user);
         $this->view->assign('supportCases', $user->getCrmAccount() ? $user->getCrmAccount()->getCasesQueryResult() : null);
@@ -157,7 +156,8 @@ class SupportCaseController extends \EssentialDots\EdSugarcrm\Controller\Abstrac
         $persistenceManager->persistAll();
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
         $emailView = $this->objectManager->get('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
-        $templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('EXT:ed_sugarcrm/Resources/Private/Templates/') . 'Email/SupportEmail.html';
+        $emailRootPath = &$GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_edsugarcrm.']['view.']['emailRootPaths.'][0];
+        $templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($emailRootPath) . 'SupportEmail.html';
         $emailView->setTemplatePathAndFilename($templatePathAndFilename);
         $emailView->assignMultiple(array(
             'link' => $this->settings['SugarCRMBackend']['case_url'] . $supportCase->getUid(),

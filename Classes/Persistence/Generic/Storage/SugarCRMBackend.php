@@ -218,12 +218,12 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	 * Fetches maximal value for given table column
 	 *
 	 * @param string $tableName The database table name
-	 * @param array $identifier An array of identifier array('fieldname' => value). This array will be transformed to a WHERE clause
+	 * @param array $where An array of identifier array('fieldname' => value). This array will be transformed to a WHERE clause
 	 * @param string $columnName column name to get the max value from
 	 * @return mixed the max value
 	 * @throws Exception\UnsupportedQueryException
 	 */
-	public function getMaxValueFromTable($tableName, $identifier, $columnName) {
+	public function getMaxValueFromTable($tableName, array $where, $columnName) {
 		throw new \EssentialDots\EdSugarcrm\Persistence\Generic\Storage\Exception\UnsupportedQueryException('SugarCRMBackend does not support getMaxValueFromTable method.', 1242814374);
 	}
 

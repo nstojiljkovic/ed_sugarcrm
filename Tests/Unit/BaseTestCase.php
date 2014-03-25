@@ -139,7 +139,13 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 		$this->cleanDatabase();
 		$this->dropDatabase();
 		$this->switchToTypo3Database();
+		$instances = GeneralUtility::getSingletonInstances();
+		$newInstances = array();
+		if (isset($instances["TYPO3\\CMS\\Core\\Cache\\CacheManager"])){
+			$newInstances["TYPO3\\CMS\\Core\\Cache\\CacheManager"] = $instances["TYPO3\\CMS\\Core\\Cache\\CacheManager"];
+		}
 		GeneralUtility::purgeInstances();
+		GeneralUtility::resetSingletonInstances($newInstances);
 
 		/** @noinspection PhpUnusedLocalVariableInspection */
 		$TCA = &$this->tcaBackup;

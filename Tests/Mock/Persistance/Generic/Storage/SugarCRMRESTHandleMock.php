@@ -148,7 +148,7 @@ class SugarCRMRESTHandleMock {
                         }
                     }
                 }
-                if ($newAdded){
+                if (is_array($newAdded)){
                     foreach($newAdded as $value){
                         if ($value['name'] == $map || $value['name'] == $property){
                             $array['value'] = $value['value'];
@@ -184,14 +184,13 @@ class SugarCRMRESTHandleMock {
         $class = $this->reflectionService->getClassSchema($className);
         $properties = $class->getProperties();
         $this->extractQuery($apiParameters["query"], $parameters);
-        $propertiesResult = array();
         $enrtyList = array();
         $frameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
         $mapping = $frameworkConfiguration['persistence']['classes'][$className]['mapping']['columns'];
         $i = 1;
         $newAdded = NULL;
         if (isset($apiParameters['module_name'])){
-            $newAdded = $apiParameters['module_name'];
+            $newAdded = self::$lastRequest[$apiParameters['module_name']];
             $apiParameters['module_name'] = NULL;
         }
         foreach($apiParameters["ids"] as $id){
@@ -228,7 +227,7 @@ class SugarCRMRESTHandleMock {
                         }
                     }
                 }
-                if ($newAdded){
+                if (is_array($newAdded)){
                     foreach($newAdded as $value){
                         if ($value['name'] == $map){
                             $array['value'] = $value['value'];

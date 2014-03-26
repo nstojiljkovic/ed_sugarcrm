@@ -101,6 +101,19 @@ class SugarCRMBackend implements \TYPO3\CMS\Extbase\Persistence\Generic\Storage\
 	}
 
 	/**
+	 * Checks if a Value Object equal to the given Object exists in the data base
+	 *
+	 * @param \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject $object The Value Object
+	 * @return mixed The matching uid if an object was found, else FALSE
+	 * @todo this is the last monster in this persistence series. refactor!
+	 */
+	public function getUidOfAlreadyPersistedValueObject(\TYPO3\CMS\Extbase\DomainObject\AbstractValueObject $object) {
+		// @todo: Implement getUidOfAlreadyPersistedValueObject() method.
+		throw new \Exception('getUidOfAlreadyPersistedValueObject not implemnted yet in SugarCRMBackend');
+	}
+
+
+	/**
 	 * Adds a row to the storage
 	 *
 	 * @param string $tableName The database table name

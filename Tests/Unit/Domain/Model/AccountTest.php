@@ -46,7 +46,7 @@ class AccountTest extends \EssentialDots\EdSugarcrm\Tests\Unit\BaseTestCase {
 	/**
 	 * @var boolean
 	 */
-	protected $useDBMemoryEngineIfAvailable = false;
+	protected $useDBMemoryEngineIfAvailable = true;
 
 	/**
 	 * SetUp test case
@@ -62,7 +62,8 @@ class AccountTest extends \EssentialDots\EdSugarcrm\Tests\Unit\BaseTestCase {
 		}
 
 		// Including only necessary extensions
-		$extensions = array('cms', 'extbase', 'extbase_domain_decorator', 'frontend');
+		$extensions = array('cms', 'frontend', 'backend','extbase', 'tstemplate', 'extbase_domain_decorator');
+
 		$this->importExtensions($extensions, true);
 		$this->importDataSet ( \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath ( "ed_sugarcrm" ) . 'Tests/Fixtures/database/default_db.xml' );
 

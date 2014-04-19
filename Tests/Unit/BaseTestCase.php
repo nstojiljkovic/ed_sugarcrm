@@ -445,18 +445,18 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 	 * @return void
 	 */
 	protected function importDatabaseDefinitions($definitionContent) {
-	
+
 		if ($this->useDBMemoryEngine) {
 			$definitionContent = preg_replace('/\)\s*ENGINE\s*=\s*(.*)\s*;/msU', ') ENGINE=MEMORY;', $definitionContent);
 			$definitionContent = preg_replace('/\)\s*;/msU', ') ENGINE=MEMORY;', $definitionContent);
-			$definitionContent = preg_replace('/\s+text\s*,/', ' varchar(4096) DEFAULT \'\' NOT NULL,', $definitionContent);
-			$definitionContent = preg_replace('/\s+longtext\s*,/', ' varchar(4096) DEFAULT \'\' NOT NULL,', $definitionContent);
-			$definitionContent = preg_replace('/\s+mediumtext\s*,/', ' varchar(1024) DEFAULT \'\' NOT NULL,', $definitionContent);
-			$definitionContent = preg_replace('/\s+tinytext\s*,/', ' varchar(255) DEFAULT \'\' NOT NULL,', $definitionContent);
-			$definitionContent = preg_replace('/\s+blob\s*,/', ' varchar(4096) DEFAULT \'\' NOT NULL,', $definitionContent);
-			$definitionContent = preg_replace('/\s+longblob\s*,/', ' varchar(4096) DEFAULT \'\' NOT NULL,', $definitionContent);
-			$definitionContent = preg_replace('/\s+mediumblob\s*,/', ' varchar(1024) DEFAULT \'\' NOT NULL,', $definitionContent);
-			$definitionContent = preg_replace('/\s+tinyblob\s*,/', ' varchar(255) DEFAULT \'\' NOT NULL,', $definitionContent);
+			$definitionContent = preg_replace('/\s+text([\s+,])/', ' varchar(1024)$1', $definitionContent);
+			$definitionContent = preg_replace('/\s+longtext([\s+,])/', ' varchar(1024)$1', $definitionContent);
+			$definitionContent = preg_replace('/\s+mediumtext([\s+,])/', ' varchar(1024)$1', $definitionContent);
+			$definitionContent = preg_replace('/\s+tinytext([\s+,])/', ' varchar(255)$1', $definitionContent);
+			$definitionContent = preg_replace('/\s+blob([\s+,])/', ' varchar(4096)$1', $definitionContent);
+			$definitionContent = preg_replace('/\s+longblob([\s+,])/', ' varchar(4096)$1', $definitionContent);
+			$definitionContent = preg_replace('/\s+mediumblob([\s+,])/', ' varchar(1024)$1', $definitionContent);
+			$definitionContent = preg_replace('/\s+tinyblob([\s+,])/', ' varchar(255)$1', $definitionContent);
 		}
 	
 		$sqlHandler = GeneralUtility::makeInstance('t3lib_install_Sql'); /* @var $sqlHandler t3lib_install_Sql */

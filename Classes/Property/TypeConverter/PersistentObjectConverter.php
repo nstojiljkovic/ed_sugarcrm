@@ -51,6 +51,17 @@ class PersistentObjectConverter extends \EssentialDots\ExtbaseDomainDecorator\Pr
 	protected $priority = 20;
 
 	/**
+	 * We can only convert if the $targetType is either tagged with entity or value object.
+	 *
+	 * @param mixed $source
+	 * @param string $targetType
+	 * @return boolean
+	 */
+	public function canConvertFrom($source, $targetType) {
+		return is_subclass_of($targetType, 'EssentialDots\\EdSugarcrm\\Domain\\Model\\AbstractEntity');
+	}
+
+	/**
 	 * Fetch an object from persistence layer.
 	 *
 	 * @param mixed $identity
